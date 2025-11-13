@@ -20,7 +20,7 @@ type Config struct {
 	SSLMode  string
 }
 
-// Получение конфигурации подключения к БД
+// Get default environment configurations for DB
 func FromEnv() Config {
 	return Config{
 		Host:     getenvDefault("PG_HOST", "localhost"),
@@ -32,7 +32,7 @@ func FromEnv() Config {
 	}
 }
 
-// Считывание настроек окружения для конфигурации
+// Get environment configurations
 func getenvDefault(key, def string) string {
 	if v := os.Getenv(key); v != "" {
 		return v
@@ -40,7 +40,7 @@ func getenvDefault(key, def string) string {
 	return def
 }
 
-// Открытие нового туннеля подклюния к БД
+// Open new connection to DB
 func NewPool(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
 	dsn := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
@@ -70,7 +70,7 @@ func NewPool(ctx context.Context, cfg Config) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
-// Инициализация подключения к БД
+// Initialize connection to BD
 func Init(ctx context.Context) error {
 	cfg := FromEnv()
 
@@ -83,7 +83,7 @@ func Init(ctx context.Context) error {
 	return nil
 }
 
-// Закрытие туннеля подключения к БД
+// Close connection to DB
 func Close() {
 	if Pool != nil {
 		Pool.Close()
