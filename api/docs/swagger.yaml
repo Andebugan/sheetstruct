@@ -1,0 +1,25 @@
+definitions:
+  api.HealthResponse:
+    description: Health check response structure
+    properties:
+      status:
+        example: healthy
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Checks if the server is active
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.HealthResponse'
+      summary: Health check endpoint
+swagger: "2.0"
