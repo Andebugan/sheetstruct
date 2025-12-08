@@ -1,2 +1,2 @@
 # sheetstruct
-Dynamic sheet constructor for creating and management characters for tabletop games
+Dynamic sheet builder for creating and managing character lists for tabletop games

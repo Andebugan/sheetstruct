@@ -34,6 +34,26 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user": {
+            "post": {
+                "description": "Creates new user, when provided with correct description ans password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "User creation endpoint",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -44,6 +64,37 @@ const docTemplate = `{
                 "status": {
                     "type": "string",
                     "example": "healthy"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "User Id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.UserID"
+                        }
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserID": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         }

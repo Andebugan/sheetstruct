@@ -19,9 +19,9 @@ type Style string
 
 // Acts as building block of each sheet
 type Component struct {
-	Id          ID // Component Id
-	UId         ID // User Id
-	SId         ID // Parent Sheet Id
+	Id          ComponentID // Component Id
+	UId         UserID // User Id
+	SId         SheetID // Parent Sheet Id
 	Name        string
 	Description string
 	Template    bool

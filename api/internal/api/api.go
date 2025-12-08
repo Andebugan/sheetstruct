@@ -3,8 +3,8 @@ package api
 import (
 	"github.com/andebugan/sheetstruct/internal/app"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Set's up and returns router for HTTP REST API
@@ -20,12 +20,11 @@ func Setup() *gin.Engine {
 		v1.GET("/health", healthCheck)
 
 		// user handlers
-		v1.GET("/user", NewUserGetHandler(userManager))
+		v1.GET("/user", NewUserGetCurrentHandler(userManager))
 		v1.POST("/user", NewUserCreateHandler(userManager))
 		v1.PATCH("/user", NewUserUpdateHandler(userManager))
 		v1.DELETE("/user", NewUserDeleteHandler(userManager))
 		v1.POST("/user/auth", NewUserAuthHandler(userManager))
-		v1.POST("/user/reset", NewUserResetHandler(userManager))
 
 		// sheet handlers
 		v1.GET("/sheet", NewSheetGetHandler(sheetManager))

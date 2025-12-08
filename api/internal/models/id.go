@@ -1,6 +1,13 @@
 package models
 
-// Id value wrapper
-type ID struct {
-	Value uint64 // Value of identifier
+type UserID struct {
+	Value uint64
+}
+
+type SheetID struct {
+	Value uint64
+}
+
+type ComponentID struct {
+	Value uint64
 }

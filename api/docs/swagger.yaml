@@ -6,6 +6,25 @@ definitions:
         example: healthy
         type: string
     type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        allOf:
+        - $ref: '#/definitions/models.UserID'
+        description: User Id
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  models.UserID:
+    properties:
+      value:
+        format: int64
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
@@ -22,4 +41,17 @@ paths:
           schema:
             $ref: '#/definitions/api.HealthResponse'
       summary: Health check endpoint
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Creates new user, when provided with correct description ans password
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: User creation endpoint
 swagger: "2.0"
