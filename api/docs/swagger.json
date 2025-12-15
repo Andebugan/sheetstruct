@@ -13,6 +13,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Utility"
+                ],
                 "summary": "Health check endpoint",
                 "responses": {
                     "200": {
@@ -24,22 +27,666 @@
                 }
             }
         },
-        "/user": {
+        "/sheet": {
             "post": {
-                "description": "Creates new user, when provided with correct description ans password",
+                "description": "Creates new empty sheet",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "User creation endpoint",
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Create new sheet",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Sheet"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sheet/{sid}": {
+            "get": {
+                "description": "Get multiple sheets avaliable to user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Get sheets",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Sheet"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "description": "Create deep clone for sheet with provided sid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Clone sheet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Sheet"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes sheet by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Delete sheet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates sheet by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Updates sheet",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Sheet"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sheet/{sid}/component": {
+            "get": {
+                "description": "Creates new component inside specified sheet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Component"
+                ],
+                "summary": "Gets components",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Component"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates new component inside specified sheet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Component"
+                ],
+                "summary": "Create new component",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Component"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Updates component with recieved data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Component"
+                ],
+                "summary": "Updates component",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Component"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sheet/{sid}/component/{cid}": {
+            "get": {
+                "description": "Get gets single component inside specified sheet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Component"
+                ],
+                "summary": "Get component",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Component ID",
+                        "name": "cid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Component"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "description": "Creates copy of component inside specified sheet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Component"
+                ],
+                "summary": "Clone component",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Component ID",
+                        "name": "cid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Component"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes component inside specified sheet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Component"
+                ],
+                "summary": "Delete component",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Component ID",
+                        "name": "cid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sheets": {
+            "get": {
+                "description": "Returns filtered sheet collection avaliable to user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Get sheets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/app.SheetFilter"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/user": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get user information for authenticated user via BearerAuth token",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Gets current authenticated User",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.User"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates new user from name, email and password, when provided with correct description ans password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Creates new user",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "409": {
+                        "description": "Conflict"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes currently authenticated User from id recieved via BearerAuth token",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete current user",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates User with values from recieved user object",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "description": "Authenticates user and generates access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "User credentials",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UserAuthDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.TokenDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/user/logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Logs user out user and generates access token",
+                "tags": [
+                    "User"
+                ],
+                "summary": "User logout",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/user/refresh_token": {
+            "post": {
+                "description": "Refreshes expired JWT token",
+                "tags": [
+                    "User"
+                ],
+                "summary": "Refresh auth token",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -53,6 +700,154 @@
                 "status": {
                     "type": "string",
                     "example": "healthy"
+                }
+            }
+        },
+        "api.TokenDTO": {
+            "description": "DTO for recieving generated JWT token",
+            "type": "object",
+            "properties": {
+                "refreshToken": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.UserAuthDTO": {
+            "description": "DTO for authenticating new user",
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "app.SheetFilter": {
+            "type": "object",
+            "properties": {
+                "newest": {
+                    "type": "boolean"
+                },
+                "template": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Component": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Component Id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.ComponentID"
+                        }
+                    ]
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sid": {
+                    "description": "Parent Sheet Id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SheetID"
+                        }
+                    ]
+                },
+                "style": {
+                    "type": "string"
+                },
+                "template": {
+                    "type": "boolean"
+                },
+                "uid": {
+                    "description": "User Id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.UserID"
+                        }
+                    ]
+                },
+                "varName": {
+                    "type": "string"
+                },
+                "varType": {
+                    "$ref": "#/definitions/models.VariableType"
+                },
+                "varValue": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            }
+        },
+        "models.ComponentID": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "models.Sheet": {
+            "type": "object",
+            "properties": {
+                "components": {
+                    "description": "Array of component ID's connected to this sheet",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ComponentID"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Sheet Id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.SheetID"
+                        }
+                    ]
+                },
+                "lastWriteTime": {
+                    "description": "Updates each time sheet is modified, used for sorting",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "template": {
+                    "type": "boolean"
+                },
+                "uid": {
+                    "description": "User Id",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.UserID"
+                        }
+                    ]
+                }
+            }
+        },
+        "models.SheetID": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
@@ -75,6 +870,9 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
                 }
             }
         },
@@ -86,6 +884,31 @@
                     "format": "int64"
                 }
             }
+        },
+        "models.VariableType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "x-enum-varnames": [
+                "Container",
+                "Number",
+                "Flag",
+                "Text",
+                "Media"
+            ]
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

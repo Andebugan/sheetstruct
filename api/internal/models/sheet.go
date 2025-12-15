@@ -10,5 +10,5 @@ type Sheet struct {
 	Description   string
 	Template      bool
 	LastWriteTime time.Time   // Updates each time sheet is modified, used for sorting
-	Components    []Component // Array of components, connected to this sheet
+	Components    []ComponentID // Array of component ID's connected to this sheet
 }

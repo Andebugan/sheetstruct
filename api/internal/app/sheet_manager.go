@@ -9,6 +9,12 @@ import (
 var ErrSheetNotFound = errors.New("Unable to find requested user")
 var ErrSheetAlredyExists = errors.New("User already exists")
 
+// Structure for sheet collection filtering parameters
+type SheetFilter struct {
+	Template bool
+	Newest   bool
+}
+
 // Interface for Sheet actions
 type ISheetManager interface {
 	// Finds Sheet by ID,
@@ -18,7 +24,7 @@ type ISheetManager interface {
 	// Returns collection of all sheets, accessible to user,
 	// if user does not exist, or has no access to sheet,
 	// returns nil, error
-	GetMany(uid models.UserID) ([]models.Sheet, error)
+	GetMany(filter SheetFilter, uid models.UserID) ([]models.Sheet, error)
 
 	// Creates new sheet with default values
 	// if creation is successfull - returns created sheet
@@ -31,7 +37,11 @@ type ISheetManager interface {
 
 	// Finds sheet with matching id and updates it's values,
 	// if user or sheet doesn' exit - returns error
-	Update(sheet models.Sheet) (models.Sheet, error)
+	Update(sheet models.Sheet, uid models.UserID) (models.Sheet, error)
+
+	// Finds sheet with matching id and creates it's deep clone
+	// if user or sheet doesn' exit - returns error
+	Clone(sid models.SheetID, uid models.UserID) (models.Sheet, error)
 }
 
 // Sheet manager data
@@ -48,10 +58,10 @@ func (s *SheetManager) Get(sid models.SheetID, uid models.UserID) (models.Sheet,
 	return models.Sheet{}, nil
 }
 
-// Returns collection of all sheets, accessible to user,
+// Returns filtered collection of all sheets, accessible to user,
 // if user does not exist, or has no access to sheet,
 // returns nil, error
-func (s *SheetManager) GetMany(uid models.UserID) ([]models.Sheet, error) {
+func (s *SheetManager) GetMany(filter SheetFilter, uid models.UserID) ([]models.Sheet, error) {
 	return []models.Sheet{}, nil
 }
 
@@ -70,6 +80,12 @@ func (s *SheetManager) Delete(sid models.SheetID, uid models.UserID) error {
 
 // Finds sheet with matching id and updates it's values,
 // if user or sheet doesn' exit - returns error
-func (s *SheetManager) Update(sheet models.Sheet) (models.Sheet, error) {
+func (s *SheetManager) Update(sheet models.Sheet, uid models.UserID) (models.Sheet, error) {
+	return models.Sheet{}, nil
+}
+
+// Finds sheet with matching id and creates it's deep clone
+// if user or sheet doesn' exit - returns error
+func (s *SheetManager) Clone(sid models.SheetID, uid models.UserID) (models.Sheet, error) {
 	return models.Sheet{}, nil
 }

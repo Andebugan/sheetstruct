@@ -9,8 +9,9 @@ type NewUserData struct {
 
 // Model of user info
 type User struct {
-	Id       UserID // User Id
-	Name     string
-	Password string
-	Email    string
+	Id           UserID // User Id
+	Name         string
+	Password     string
+	Email        string
+	RefreshToken string
 }

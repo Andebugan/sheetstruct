@@ -35,7 +35,7 @@ type IComponentManager interface {
 
 	// Finds component with matching id and updates it's values,
 	// if user or component doesn' exit - returns error
-	Update(sheet models.Component) (models.Component, error)
+	Update(sheet models.Component, uid models.UserID) (models.Component, error)
 }
 
 // Component manager data
@@ -80,6 +80,6 @@ func (c *ComponentManager) Delete(cid models.ComponentID, sid models.SheetID, ui
 
 // Finds component with matching id and updates it's values,
 // if user or component doesn' exit - returns error
-func (c *ComponentManager) Update(sheet models.Component) (models.Component, error) {
+func (c *ComponentManager) Update(sheet models.Component, uid models.UserID) (models.Component, error) {
 	return models.Component{}, nil
 }

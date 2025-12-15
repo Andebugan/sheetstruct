@@ -19,7 +19,7 @@ type IUserManager interface {
 	// Returns collection of all users
 	GetMany() ([]models.User, error)
 
-	// Registers new user
+	// Registers new user,
 	// if creation is successfull - returns created user
 	Create(userData models.NewUserData) (models.User, error)
 
@@ -35,7 +35,10 @@ type IUserManager interface {
 	// username and email can be both used as login,
 	// if user doesn't exist or password is incorrect,
 	// returns nil and error
-	Auth(login string, password string) (models.User, error)
+	Login(login string, password string) (models.User, error)
+
+	// Logs user out of the system by clearing refresh token
+	Logout(uid models.UserID) (error)
 }
 
 // User manager data
@@ -78,6 +81,12 @@ func (u *UserManager) Update(user models.User) (models.User, error) {
 // Returns user with matching credentials,
 // if user doesn't exist or password is incorrect,
 // returns nil and error
-func (u *UserManager) Auth(login string, password string) (models.User, error) {
+func (u *UserManager) Login(login string, password string) (models.User, error) {
 	return models.User{}, nil
+}
+
+// Logs user out of the system by clearing refresh token
+func (u *UserManager) Logout(uid models.UserID) (error) {
+	//user.RefreshToken = ""
+	return nil
 }

@@ -6,6 +6,98 @@ definitions:
         example: healthy
         type: string
     type: object
+  api.TokenDTO:
+    description: DTO for recieving generated JWT token
+    properties:
+      refreshToken:
+        type: string
+      token:
+        type: string
+    type: object
+  api.UserAuthDTO:
+    description: DTO for authenticating new user
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  app.SheetFilter:
+    properties:
+      newest:
+        type: boolean
+      template:
+        type: boolean
+    type: object
+  models.Component:
+    properties:
+      description:
+        type: string
+      id:
+        allOf:
+        - $ref: '#/definitions/models.ComponentID'
+        description: Component Id
+      name:
+        type: string
+      sid:
+        allOf:
+        - $ref: '#/definitions/models.SheetID'
+        description: Parent Sheet Id
+      style:
+        type: string
+      template:
+        type: boolean
+      uid:
+        allOf:
+        - $ref: '#/definitions/models.UserID'
+        description: User Id
+      varName:
+        type: string
+      varType:
+        $ref: '#/definitions/models.VariableType'
+      varValue:
+        items:
+          format: int32
+          type: integer
+        type: array
+    type: object
+  models.ComponentID:
+    properties:
+      value:
+        format: int64
+        type: integer
+    type: object
+  models.Sheet:
+    properties:
+      components:
+        description: Array of component ID's connected to this sheet
+        items:
+          $ref: '#/definitions/models.ComponentID'
+        type: array
+      description:
+        type: string
+      id:
+        allOf:
+        - $ref: '#/definitions/models.SheetID'
+        description: Sheet Id
+      lastWriteTime:
+        description: Updates each time sheet is modified, used for sorting
+        type: string
+      name:
+        type: string
+      template:
+        type: boolean
+      uid:
+        allOf:
+        - $ref: '#/definitions/models.UserID'
+        description: User Id
+    type: object
+  models.SheetID:
+    properties:
+      value:
+        format: int64
+        type: integer
+    type: object
   models.User:
     properties:
       email:
@@ -18,6 +110,8 @@ definitions:
         type: string
       password:
         type: string
+      refreshToken:
+        type: string
     type: object
   models.UserID:
     properties:
@@ -25,6 +119,20 @@ definitions:
         format: int64
         type: integer
     type: object
+  models.VariableType:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
+    x-enum-varnames:
+    - Container
+    - Number
+    - Flag
+    - Text
+    - Media
 info:
   contact: {}
 paths:
@@ -41,11 +149,328 @@ paths:
           schema:
             $ref: '#/definitions/api.HealthResponse'
       summary: Health check endpoint
-  /user:
+      tags:
+      - Utility
+  /sheet:
     post:
       consumes:
       - application/json
-      description: Creates new user, when provided with correct description ans password
+      description: Creates new empty sheet
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Sheet'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Create new sheet
+      tags:
+      - Sheet
+  /sheet/{sid}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes sheet by id
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete sheet
+      tags:
+      - Sheet
+    get:
+      consumes:
+      - application/json
+      description: Get multiple sheets avaliable to user
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Sheet'
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get sheets
+      tags:
+      - Sheet
+    patch:
+      consumes:
+      - application/json
+      description: Updates sheet by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Sheet'
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Updates sheet
+      tags:
+      - Sheet
+    put:
+      consumes:
+      - application/json
+      description: Create deep clone for sheet with provided sid
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Sheet'
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Clone sheet
+      tags:
+      - Sheet
+  /sheet/{sid}/component:
+    get:
+      consumes:
+      - application/json
+      description: Creates new component inside specified sheet
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Component'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Gets components
+      tags:
+      - Component
+    patch:
+      consumes:
+      - application/json
+      description: Updates component with recieved data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Component'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Updates component
+      tags:
+      - Component
+    post:
+      consumes:
+      - application/json
+      description: Creates new component inside specified sheet
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Component'
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Create new component
+      tags:
+      - Component
+  /sheet/{sid}/component/{cid}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes component inside specified sheet
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      - description: Component ID
+        in: query
+        name: cid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Delete component
+      tags:
+      - Component
+    get:
+      consumes:
+      - application/json
+      description: Get gets single component inside specified sheet
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      - description: Component ID
+        in: query
+        name: cid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Component'
+            type: array
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Get component
+      tags:
+      - Component
+    put:
+      consumes:
+      - application/json
+      description: Creates copy of component inside specified sheet
+      parameters:
+      - description: Sheet ID
+        in: query
+        name: sid
+        required: true
+        type: integer
+      - description: Component ID
+        in: query
+        name: cid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Component'
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Clone component
+      tags:
+      - Component
+  /sheets:
+    get:
+      consumes:
+      - application/json
+      description: Returns filtered sheet collection avaliable to user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/app.SheetFilter'
+            type: array
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Get sheets
+      tags:
+      - Sheet
+  /user:
+    delete:
+      description: Deletes currently authenticated User from id recieved via BearerAuth
+        token
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Delete current user
+      tags:
+      - User
+    get:
+      description: Get user information for authenticated user via BearerAuth token
       produces:
       - application/json
       responses:
@@ -53,5 +478,120 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.User'
-      summary: User creation endpoint
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Gets current authenticated User
+      tags:
+      - User
+    patch:
+      description: Updates User with values from recieved user object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - User
+    post:
+      consumes:
+      - application/json
+      description: Creates new user from name, email and password, when provided with
+        correct description ans password
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      summary: Creates new user
+      tags:
+      - User
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates user and generates access token
+      parameters:
+      - description: User credentials
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.UserAuthDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.TokenDTO'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: User login
+      tags:
+      - User
+  /user/logout:
+    post:
+      description: Logs user out user and generates access token
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: User logout
+      tags:
+      - User
+  /user/refresh_token:
+    post:
+      description: Refreshes expired JWT token
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Refresh auth token
+      tags:
+      - User
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

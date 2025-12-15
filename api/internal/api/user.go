@@ -6,6 +6,7 @@ import (
 	"github.com/andebugan/sheetstruct/internal/app"
 	"github.com/andebugan/sheetstruct/internal/models"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // @description DTO for new user info
@@ -21,13 +22,25 @@ type UserAuthDTO struct {
 	Password string
 }
 
-// Creates new user from name, email and password
-// @summary User creation endpoint
-// @description Creates new user, when provided with correct description ans password
-// @accept json
-// @produce json
-// @success 200 {object} models.User
-// @router /user [post]
+// @description DTO for recieving generated JWT token
+type TokenDTO struct {
+	Token        string
+	RefreshToken string
+}
+
+// Creates endpoint for new user generation
+//
+//	@summary		Creates new user
+//	@description 	Creates new user from name, email and password, when provided with correct description ans password
+//	@tags			User
+//	@accept 		json
+//	@produce 		json
+//	@success 		201 {object} models.User
+//	@params			request body UserCredsDTO true "Credentials DTO"
+//	@failure		400
+//	@failure		409
+//	@failure		500
+//	@router 		/user [post]
 func NewUserCreateHandler(userManager app.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var newUser UserCredsDTO
@@ -37,32 +50,52 @@ func NewUserCreateHandler(userManager app.IUserManager) func(c *gin.Context) {
 			return
 		}
 
+		hashedPassword, err := HashPassword(newUser.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		var userData = models.NewUserData{
 			Name:     newUser.Name,
 			Email:    newUser.Email,
-			Password: newUser.Password,
+			Password: hashedPassword,
 		}
 		user, err := userManager.Create(userData)
 
 		if err == app.ErrUserAlredyExists {
-			c.JSON(http.StatusBadRequest, err.Error())
+			c.JSON(http.StatusConflict, err.Error())
 			return
 		} else if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		c.JSON(http.StatusOK, user)
+		c.JSON(http.StatusCreated, user)
 	}
 }
 
-// Creates handler func for getting current User info
+// Get current user endpoint
+//
+//	@summary		Gets current authenticated User
+//	@description 	Get user information for authenticated user via BearerAuth token
+//	@tags			User
+//	@produce 		json
+//	@success 		200 {object} models.User
+//	@failure		401
+//	@failure		404
+//	@failure		500
+//	@security       BearerAuth
+//	@router 		/user [get]
 func NewUserGetCurrentHandler(userManager app.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		// TODO: replace with ID from JWT Token
-		id := models.UserID{}
+		uid, err := TryGetUidFromToken(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		user, err := userManager.Get(id)
+		user, err := userManager.Get(uid)
 
 		if err == app.ErrUserNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
@@ -77,12 +110,25 @@ func NewUserGetCurrentHandler(userManager app.IUserManager) func(c *gin.Context)
 }
 
 // Creates handler func for deleting User
+//
+//	@summary 		Delete current user
+//	@description 	Deletes currently authenticated User from id recieved via BearerAuth token
+//	@tags			User
+//	@success 		200
+//	@failure		401
+//	@failure		404
+//	@failure		500
+//	@security       BearerAuth
+//	@router 	 	/user [delete]
 func NewUserDeleteHandler(userManager app.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		// TODO: replace with ID from JWT Token
-		id := models.UserID{}
+		uid, err := TryGetUidFromToken(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
-		err := userManager.Delete(id)
+		err = userManager.Delete(uid)
 
 		if err == app.ErrUserNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
@@ -97,6 +143,17 @@ func NewUserDeleteHandler(userManager app.IUserManager) func(c *gin.Context) {
 }
 
 // Creates handler func for updating User
+//
+//	@summary 		Update user
+//	@description 	Updates User with values from recieved user object
+//	@tags			User
+//	@params			request body models.User true "New user data"
+//	@success 		200 {object} models.User
+//	@failure 		401
+//	@failure 		404
+//	@failure 		500
+//	@security       BearerAuth
+//	@router 		/user [patch]
 func NewUserUpdateHandler(userManager app.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var user models.User
@@ -118,7 +175,19 @@ func NewUserUpdateHandler(userManager app.IUserManager) func(c *gin.Context) {
 }
 
 // Creates handler func for authenticating User
-func NewUserAuthHandler(userManager app.IUserManager) func(c *gin.Context) {
+//
+//	@summary 		User login
+//	@description 	Authenticates user and generates access token
+//	@tags			User
+//	@param 			request body UserAuthDTO true "User credentials"
+//	@accept			json
+//	@produce		json
+//	@success 		200 {object} TokenDTO
+//	@failure		400
+//	@failure		400
+//	@failure		500
+//	@router 		/user/login [post]
+func NewUserLoginHandler(userManager app.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var authData UserAuthDTO
 		err := c.BindJSON(&authData)
@@ -127,7 +196,13 @@ func NewUserAuthHandler(userManager app.IUserManager) func(c *gin.Context) {
 			return
 		}
 
-		user, err := userManager.Auth(authData.Login, authData.Password)
+		hashedPassword, err := HashPassword(authData.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		user, err := userManager.Login(authData.Login, hashedPassword)
 
 		if err == app.ErrUserAuthFailed {
 			c.JSON(http.StatusBadRequest, err.Error())
@@ -137,6 +212,99 @@ func NewUserAuthHandler(userManager app.IUserManager) func(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusOK, user)
+		token, err := GenerateJWT(user.Id, user.Name)
+		refreshToken, err := GenerateRefreshToken(user.Id, user.Name)
+
+		c.JSON(http.StatusOK, TokenDTO{
+			Token:        token,
+			RefreshToken: refreshToken,
+		})
+	}
+}
+
+// Creates handler func for refreshing auth token
+//
+//	@summary 		Refresh auth token
+//	@description 	Refreshes expired JWT token
+//	@tags			User
+//	@success 		200 {string} token
+//	@failure		400
+//	@failure		401
+//	@failure		500
+//	@router 		/user/refresh_token [post]
+func NewUserRefreshTokenHandler(userManager app.IUserManager) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var req struct {
+			RefreshToken string `json:"refresh_token"`
+		}
+
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		token, err := jwt.Parse(req.RefreshToken, func(token *jwt.Token) (any, error) {
+			return RefreshSecret, nil
+		})
+
+		if err != nil || !token.Valid {
+			c.JSON(http.StatusUnauthorized, "Invalid refresh token")
+			return
+		}
+
+		claims := token.Claims.(jwt.MapClaims)
+		id := models.UserID{
+			Value: claims["id"].(uint64),
+		}
+
+		user, err := userManager.Get(id)
+		if err == app.ErrUserNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		} else if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		newToken, err := GenerateJWT(user.Id, user.Name)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusOK, newToken)
+	}
+}
+
+// Creates handler func for loggin User out of the system
+//
+//	@summary 		User logout
+//	@description 	Logs user out user and generates access token
+//	@tags			User
+//	@success 		200
+//	@failure		400
+//	@failure		401
+//	@failure		500
+//	@security       BearerAuth
+//	@router 		/user/logout [post]
+func NewUserLogoutHandler(userManager app.IUserManager) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		uid, err := TryGetUidFromToken(c)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		err = userManager.Logout(uid)
+
+		if err == app.ErrUserAuthFailed {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		} else if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusOK, "Logged out successfully")
 	}
 }
