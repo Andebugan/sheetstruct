@@ -9,9 +9,8 @@ type NewUserData struct {
 
 // Model of user info
 type User struct {
-	Id           UserID // User Id
-	Name         string
-	Password     string
-	Email        string
-	RefreshToken string
+	Id           UserID `gorm:"primarykey" json:"id"`
+	Name         string `gorm:"size:100;not null" json:"name"`
+	Password     string `gorm:"size:100;not null" json:"password"`
+	Email        string `gorm:"size:100;uniqueindex;not null" json:"email"`
 }

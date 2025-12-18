@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/andebugan/sheetstruct/internal/app"
+	"github.com/andebugan/sheetstruct/internal/app/managers"
 	"github.com/andebugan/sheetstruct/internal/models"
 	"github.com/gin-gonic/gin"
 )
@@ -32,12 +33,12 @@ func TryGetSheetIdFromQuery(c *gin.Context) (models.SheetID, error) {
 //  @tags			Sheet
 //  @accept 		json
 //  @produce 		json
-//	@params			request body models.SheetFilter true "Filter settings"
-//  @success 		200 {object} []app.SheetFilter
-//  @failure		401
-//  @failure		500
+//	@param			request body managers.SheetFilter true "Filter settings"
+//  @success 		200 {object} []managers.SheetFilter
+//  @failure		401 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheets [get]
-func NewSheetsGetHandler(sheetManager app.ISheetManager) func(c *gin.Context) {
+func NewSheetsGetHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -46,7 +47,7 @@ func NewSheetsGetHandler(sheetManager app.ISheetManager) func(c *gin.Context) {
 		}
 
 		// Get filter
-		var filter app.SheetFilter
+		var filter managers.SheetFilter
 		err = c.BindJSON(&filter)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, err.Error())
@@ -73,11 +74,11 @@ func NewSheetsGetHandler(sheetManager app.ISheetManager) func(c *gin.Context) {
 //  @produce 		json
 //	@param 			sid query int true "Sheet ID"
 //  @success 		200 {object} models.Sheet
-//  @failure		401
-//  @failure		404
-//  @failure		500
+//  @failure		401 {object} string
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid} [get]
-func NewSheetGetHandler(sheetManager app.ISheetManager) func(c *gin.Context) {
+func NewSheetGetHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -113,10 +114,10 @@ func NewSheetGetHandler(sheetManager app.ISheetManager) func(c *gin.Context) {
 //  @accept 		json
 //  @produce 		json
 //  @success 		201 {object} models.Sheet
-//  @failure 		401
-//  @failure		500
+//  @failure 		401 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet [post]
-func NewSheetCreateHandler(sheetManager app.ISheetManager) func(c *gin.Context) {
+func NewSheetCreateHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -143,12 +144,12 @@ func NewSheetCreateHandler(sheetManager app.ISheetManager) func(c *gin.Context) 
 //  @accept 		json
 //  @produce 		json
 //	@param 			sid query int true "Sheet ID"
-//  @success 		200
-//  @failure		401
-//  @failure		404
-//  @failure		500
+//  @success 		200 {object} string
+//  @failure		401 {object} string
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid} [delete]
-func NewSheetDeleteHandler(sheetManager app.ISheetManager) func(c *gin.Context) {
+func NewSheetDeleteHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -183,13 +184,13 @@ func NewSheetDeleteHandler(sheetManager app.ISheetManager) func(c *gin.Context) 
 //  @tags			Sheet
 //  @accept 		json
 //  @produce 		json
-//	@params			request body models.Sheet true "Updated sheet"
+//	@param			request body models.Sheet true "Updated sheet"
 //  @success 		200 {object} models.Sheet
-//  @failure		401
-//  @failure		404
-//  @failure		500
+//  @failure		401 {object} string
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid} [patch]
-func NewSheetUpdateHanlder(sheetManager app.ISheetManager) func(c *gin.Context) {
+func NewSheetUpdateHanlder(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -227,11 +228,11 @@ func NewSheetUpdateHanlder(sheetManager app.ISheetManager) func(c *gin.Context) 
 //  @produce 		json
 //	@param			sid query int true "Sheet ID"
 //  @success 		201 {object} models.Sheet
-//  @failure		401
-//  @failure		404
-//  @failure		500
+//  @failure		401 {object} string
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid} [put]
-func NewSheetCloneHanlder(sheetManager app.ISheetManager) func(c *gin.Context) {
+func NewSheetCloneHanlder(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {

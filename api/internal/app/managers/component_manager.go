@@ -1,13 +1,8 @@
-package app
+package managers
 
 import (
-	"errors"
-
 	"github.com/andebugan/sheetstruct/internal/models"
 )
-
-var ErrComponentNotFound = errors.New("Unable to find requested user")
-var ErrComponentAlredyExists = errors.New("User already exists")
 
 // Interface for Component actions
 type IComponentManager interface {

@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/andebugan/sheetstruct/internal/app"
+	"github.com/andebugan/sheetstruct/internal/app/managers"
 	"github.com/andebugan/sheetstruct/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -36,12 +38,12 @@ type TokenDTO struct {
 //	@accept 		json
 //	@produce 		json
 //	@success 		201 {object} models.User
-//	@params			request body UserCredsDTO true "Credentials DTO"
-//	@failure		400
-//	@failure		409
-//	@failure		500
+//	@param			request body UserCredsDTO true "Credentials DTO"
+//	@failure		400 {object} string
+//	@failure		409 {object} string
+//	@failure		500 {object} string
 //	@router 		/user [post]
-func NewUserCreateHandler(userManager app.IUserManager) func(c *gin.Context) {
+func NewUserCreateHandler(userManager managers.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var newUser UserCredsDTO
 		err := c.BindJSON(&newUser)
@@ -50,20 +52,15 @@ func NewUserCreateHandler(userManager app.IUserManager) func(c *gin.Context) {
 			return
 		}
 
-		hashedPassword, err := HashPassword(newUser.Password)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-
 		var userData = models.NewUserData{
 			Name:     newUser.Name,
 			Email:    newUser.Email,
-			Password: hashedPassword,
+			Password: newUser.Password,
 		}
+
 		user, err := userManager.Create(userData)
 
-		if err == app.ErrUserAlredyExists {
+		if err == app.ErrUserNameAlredyExists || err == app.ErrUserEmailAlredyExists {
 			c.JSON(http.StatusConflict, err.Error())
 			return
 		} else if err != nil {
@@ -82,12 +79,12 @@ func NewUserCreateHandler(userManager app.IUserManager) func(c *gin.Context) {
 //	@tags			User
 //	@produce 		json
 //	@success 		200 {object} models.User
-//	@failure		401
-//	@failure		404
-//	@failure		500
+//	@failure		401 {object} string
+//	@failure		404 {object} string
+//	@failure		500 {object} string
 //	@security       BearerAuth
 //	@router 		/user [get]
-func NewUserGetCurrentHandler(userManager app.IUserManager) func(c *gin.Context) {
+func NewUserGetCurrentHandler(userManager managers.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -95,6 +92,7 @@ func NewUserGetCurrentHandler(userManager app.IUserManager) func(c *gin.Context)
 			return
 		}
 
+		fmt.Println(uid)
 		user, err := userManager.Get(uid)
 
 		if err == app.ErrUserNotFound {
@@ -114,13 +112,13 @@ func NewUserGetCurrentHandler(userManager app.IUserManager) func(c *gin.Context)
 //	@summary 		Delete current user
 //	@description 	Deletes currently authenticated User from id recieved via BearerAuth token
 //	@tags			User
-//	@success 		200
-//	@failure		401
-//	@failure		404
-//	@failure		500
+//	@success 		200 {object} string
+//	@failure		401 {object} string
+//	@failure		404 {object} string
+//	@failure		500 {object} string
 //	@security       BearerAuth
 //	@router 	 	/user [delete]
-func NewUserDeleteHandler(userManager app.IUserManager) func(c *gin.Context) {
+func NewUserDeleteHandler(userManager managers.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -147,14 +145,14 @@ func NewUserDeleteHandler(userManager app.IUserManager) func(c *gin.Context) {
 //	@summary 		Update user
 //	@description 	Updates User with values from recieved user object
 //	@tags			User
-//	@params			request body models.User true "New user data"
+//	@param			request body models.User true "New user data"
 //	@success 		200 {object} models.User
-//	@failure 		401
-//	@failure 		404
-//	@failure 		500
+//	@failure 		401 {object} string
+//	@failure 		404 {object} string
+//	@failure 		500 {object} string
 //	@security       BearerAuth
 //	@router 		/user [patch]
-func NewUserUpdateHandler(userManager app.IUserManager) func(c *gin.Context) {
+func NewUserUpdateHandler(userManager managers.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var user models.User
 		err := c.BindJSON(&user)
@@ -183,11 +181,11 @@ func NewUserUpdateHandler(userManager app.IUserManager) func(c *gin.Context) {
 //	@accept			json
 //	@produce		json
 //	@success 		200 {object} TokenDTO
-//	@failure		400
-//	@failure		400
-//	@failure		500
+//	@failure		400 {object} string
+//	@failure		400 {object} string
+//	@failure		500 {object} string
 //	@router 		/user/login [post]
-func NewUserLoginHandler(userManager app.IUserManager) func(c *gin.Context) {
+func NewUserLoginHandler(userManager managers.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var authData UserAuthDTO
 		err := c.BindJSON(&authData)
@@ -196,13 +194,7 @@ func NewUserLoginHandler(userManager app.IUserManager) func(c *gin.Context) {
 			return
 		}
 
-		hashedPassword, err := HashPassword(authData.Password)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		user, err := userManager.Login(authData.Login, hashedPassword)
+		user, err := userManager.Login(authData.Login, authData.Password)
 
 		if err == app.ErrUserAuthFailed {
 			c.JSON(http.StatusBadRequest, err.Error())
@@ -228,11 +220,11 @@ func NewUserLoginHandler(userManager app.IUserManager) func(c *gin.Context) {
 //	@description 	Refreshes expired JWT token
 //	@tags			User
 //	@success 		200 {string} token
-//	@failure		400
-//	@failure		401
-//	@failure		500
+//	@failure		400 {object} string
+//	@failure		401 {object} string
+//	@failure		500 {object} string
 //	@router 		/user/refresh_token [post]
-func NewUserRefreshTokenHandler(userManager app.IUserManager) func(c *gin.Context) {
+func NewUserRefreshTokenHandler(userManager managers.IUserManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var req struct {
 			RefreshToken string `json:"refresh_token"`
@@ -273,38 +265,5 @@ func NewUserRefreshTokenHandler(userManager app.IUserManager) func(c *gin.Contex
 		}
 
 		c.JSON(http.StatusOK, newToken)
-	}
-}
-
-// Creates handler func for loggin User out of the system
-//
-//	@summary 		User logout
-//	@description 	Logs user out user and generates access token
-//	@tags			User
-//	@success 		200
-//	@failure		400
-//	@failure		401
-//	@failure		500
-//	@security       BearerAuth
-//	@router 		/user/logout [post]
-func NewUserLogoutHandler(userManager app.IUserManager) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		uid, err := TryGetUidFromToken(c)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		err = userManager.Logout(uid)
-
-		if err == app.ErrUserAuthFailed {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		} else if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusOK, "Logged out successfully")
 	}
 }

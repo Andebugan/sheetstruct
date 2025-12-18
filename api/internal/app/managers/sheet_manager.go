@@ -1,13 +1,8 @@
-package app
+package managers
 
 import (
-	"errors"
-
 	"github.com/andebugan/sheetstruct/internal/models"
 )
-
-var ErrSheetNotFound = errors.New("Unable to find requested user")
-var ErrSheetAlredyExists = errors.New("User already exists")
 
 // Structure for sheet collection filtering parameters
 type SheetFilter struct {

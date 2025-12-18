@@ -22,7 +22,17 @@ definitions:
       password:
         type: string
     type: object
-  app.SheetFilter:
+  api.UserCredsDTO:
+    description: DTO for new user info
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  managers.SheetFilter:
     properties:
       newest:
         type: boolean
@@ -103,14 +113,10 @@ definitions:
       email:
         type: string
       id:
-        allOf:
-        - $ref: '#/definitions/models.UserID'
-        description: User Id
+        $ref: '#/definitions/models.UserID'
       name:
         type: string
       password:
-        type: string
-      refreshToken:
         type: string
     type: object
   models.UserID:
@@ -165,8 +171,12 @@ paths:
             $ref: '#/definitions/models.Sheet'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Create new sheet
       tags:
       - Sheet
@@ -186,12 +196,20 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            type: string
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Delete sheet
       tags:
       - Sheet
@@ -214,10 +232,16 @@ paths:
             $ref: '#/definitions/models.Sheet'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Get sheets
       tags:
       - Sheet
@@ -225,6 +249,13 @@ paths:
       consumes:
       - application/json
       description: Updates sheet by id
+      parameters:
+      - description: Updated sheet
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Sheet'
       produces:
       - application/json
       responses:
@@ -234,10 +265,16 @@ paths:
             $ref: '#/definitions/models.Sheet'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Updates sheet
       tags:
       - Sheet
@@ -260,10 +297,16 @@ paths:
             $ref: '#/definitions/models.Sheet'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Clone sheet
       tags:
       - Sheet
@@ -287,8 +330,12 @@ paths:
             $ref: '#/definitions/models.Component'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Gets components
       tags:
       - Component
@@ -296,6 +343,13 @@ paths:
       consumes:
       - application/json
       description: Updates component with recieved data
+      parameters:
+      - description: Updated component
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Component'
       produces:
       - application/json
       responses:
@@ -305,12 +359,20 @@ paths:
             $ref: '#/definitions/models.Component'
         "400":
           description: Bad Request
+          schema:
+            type: string
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Updates component
       tags:
       - Component
@@ -333,8 +395,12 @@ paths:
             $ref: '#/definitions/models.Component'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Create new component
       tags:
       - Component
@@ -363,8 +429,12 @@ paths:
             type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Delete component
       tags:
       - Component
@@ -394,8 +464,12 @@ paths:
             type: array
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Get component
       tags:
       - Component
@@ -423,10 +497,16 @@ paths:
             $ref: '#/definitions/models.Component'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Clone component
       tags:
       - Component
@@ -435,6 +515,13 @@ paths:
       consumes:
       - application/json
       description: Returns filtered sheet collection avaliable to user
+      parameters:
+      - description: Filter settings
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/managers.SheetFilter'
       produces:
       - application/json
       responses:
@@ -442,12 +529,16 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/app.SheetFilter'
+              $ref: '#/definitions/managers.SheetFilter'
             type: array
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Get sheets
       tags:
       - Sheet
@@ -458,12 +549,20 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            type: string
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       security:
       - BearerAuth: []
       summary: Delete current user
@@ -480,10 +579,16 @@ paths:
             $ref: '#/definitions/models.User'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       security:
       - BearerAuth: []
       summary: Gets current authenticated User
@@ -491,6 +596,13 @@ paths:
       - User
     patch:
       description: Updates User with values from recieved user object
+      parameters:
+      - description: New user data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
       responses:
         "200":
           description: OK
@@ -498,10 +610,16 @@ paths:
             $ref: '#/definitions/models.User'
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "404":
           description: Not Found
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       security:
       - BearerAuth: []
       summary: Update user
@@ -512,6 +630,13 @@ paths:
       - application/json
       description: Creates new user from name, email and password, when provided with
         correct description ans password
+      parameters:
+      - description: Credentials DTO
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api.UserCredsDTO'
       produces:
       - application/json
       responses:
@@ -521,10 +646,16 @@ paths:
             $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
+          schema:
+            type: string
         "409":
           description: Conflict
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Creates new user
       tags:
       - User
@@ -549,26 +680,13 @@ paths:
             $ref: '#/definitions/api.TokenDTO'
         "400":
           description: Bad Request
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: User login
-      tags:
-      - User
-  /user/logout:
-    post:
-      description: Logs user out user and generates access token
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-        "401":
-          description: Unauthorized
-        "500":
-          description: Internal Server Error
-      security:
-      - BearerAuth: []
-      summary: User logout
       tags:
       - User
   /user/refresh_token:
@@ -581,10 +699,16 @@ paths:
             type: string
         "400":
           description: Bad Request
+          schema:
+            type: string
         "401":
           description: Unauthorized
+          schema:
+            type: string
         "500":
           description: Internal Server Error
+          schema:
+            type: string
       summary: Refresh auth token
       tags:
       - User

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/andebugan/sheetstruct/internal/app"
+	"github.com/andebugan/sheetstruct/internal/app/managers"
 	"github.com/andebugan/sheetstruct/internal/models"
 	"github.com/gin-gonic/gin"
 )
@@ -34,10 +35,10 @@ func TryGetComponentIdFromQuery(c *gin.Context) (models.ComponentID, error) {
 //  @produce 		json
 //	@param			sid query int true "Sheet ID"
 //  @success 		200 {object} models.Component
-//  @failure		401
-//  @failure		500
+//  @failure		401 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component [get]
-func NewComponentsGetHandler(componentManager app.IComponentManager) func(c *gin.Context) {
+func NewComponentsGetHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -72,10 +73,10 @@ func NewComponentsGetHandler(componentManager app.IComponentManager) func(c *gin
 //	@param			sid query int true "Sheet ID"
 //	@param			cid query int true "Component ID"
 //  @success 		200 {object} []models.Component
-//  @failure		404
-//  @failure		500
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component/{cid} [get]
-func NewComponentGetHandler(componentManager app.IComponentManager) func(c *gin.Context) {
+func NewComponentGetHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -119,11 +120,11 @@ func NewComponentGetHandler(componentManager app.IComponentManager) func(c *gin.
 //	@param			sid query int true "Sheet ID"
 //	@param			cid query int true "Component ID"
 //  @success 		201 {object} models.Component
-//  @failure		401
-//  @failure		404
-//  @failure		500
+//  @failure		401 {object} string
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component/{cid} [put]
-func NewComponentCloneHandler(componentManager app.IComponentManager) func(c *gin.Context) {
+func NewComponentCloneHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -166,10 +167,10 @@ func NewComponentCloneHandler(componentManager app.IComponentManager) func(c *gi
 //  @produce 		json
 //	@param			sid query int true "Sheet ID"
 //  @success 		201 {object} models.Component
-//  @failure		401
-//  @failure		500
+//  @failure		401 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component [post]
-func NewComponentCreateHandler(componentManager app.IComponentManager) func(c *gin.Context) {
+func NewComponentCreateHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -204,10 +205,10 @@ func NewComponentCreateHandler(componentManager app.IComponentManager) func(c *g
 //  @success 		200 {object} string
 //	@param			sid query int true "Sheet ID"
 //	@param			cid query int true "Component ID"
-//  @failure		404
-//  @failure		500
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component/{cid} [delete]
-func NewComponentDeleteHandler(componentManager app.IComponentManager) func(c *gin.Context) {
+func NewComponentDeleteHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {
@@ -249,13 +250,13 @@ func NewComponentDeleteHandler(componentManager app.IComponentManager) func(c *g
 //  @accept 		json
 //  @produce 		json
 //  @success 		200 {object} models.Component
-//	@params			request body models.Component true "Updated component"
-//  @failure		400
-//  @failure		401
-//  @failure		404
-//  @failure		500
+//	@param			request body models.Component true "Updated component"
+//  @failure		400 {object} string
+//  @failure		401 {object} string
+//  @failure		404 {object} string
+//  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component [patch]
-func NewComponentUpdateHandler(componentManager app.IComponentManager) func(c *gin.Context) {
+func NewComponentUpdateHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
 		if err != nil {

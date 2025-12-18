@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -26,7 +27,20 @@ func TryGetUidFromToken(c *gin.Context) (models.UserID, error) {
 	if !exists {
 		return uid, ErrUnableToGetUidFromToken
 	} else {
-		uid.Value = value.(uint64)
+		switch v := value.(type) {
+		case uint64:
+			uid.Value = v
+		case float64:
+			// Handle potential precision loss
+			if v < 0 {
+				return uid, ErrUnableToGetUidFromToken
+			}
+			uid.Value = uint64(v)
+		case int, int32, int64:
+			uid.Value = uint64(reflect.ValueOf(v).Int())
+		default:
+			return uid, ErrUnableToGetUidFromToken
+		}
 	}
 
 	return uid, nil
