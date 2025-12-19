@@ -1,0 +1,60 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: sheetstruct-api
+    ports:
+      - "5000:5000"
+    volumes:
+      - api-database:/root/database
+    networks:
+      - sheetstruct-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:5000/api/v1
+    container_name: sheetstruct-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - frontend-build:/usr/share/nginx/html
+    depends_on:
+      - api
+    networks:
+      - sheetstruct-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # if Postgre
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: sheetstruct-db
+  #   environment:
+  #     - POSTGRES_USER=sheetstruct
+  #     - POSTGRES_PASSWORD=sheetstruct
+  #     - POSTGRES_DB=sheetstruct
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   networks:
+  #     - sheetstruct-network
+  #   restart: unless-stopped
+
+networks:
+  sheetstruct-network:
+    driver: bridge
+
+volumes:
+  frontend-build:
+  api-database:
+  # postgres-data:
+

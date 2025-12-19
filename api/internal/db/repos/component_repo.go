@@ -25,7 +25,7 @@ func (r *GormComponentRepository) FindForSheet(ctx context.Context, sid uint64) 
 	var components []dtos.Component
 
 	err := r.DB.WithContext(ctx). 
-				Where("sid = ?", sid).
+				Where("s_id = ?", sid).
 				Find(&components).Error
 
 	if err != nil {

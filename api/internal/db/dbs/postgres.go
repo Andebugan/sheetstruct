@@ -24,9 +24,9 @@ type Config struct {
 func FromEnv() Config {
 	return Config{
 		Host:     getenvDefault("PG_HOST", "localhost"),
-		Port:     getenvDefault("PG_PORT", "5432"),
+		Port:     getenvDefault("PG_PORT", "5435"),
 		User:     getenvDefault("PG_USER", "postgres"),
-		Password: getenvDefault("PG_PASSWORD", ""),
+		Password: getenvDefault("PG_PASSWORD", "0000"),
 		Database: getenvDefault("PG_DB", "postgres"),
 		SSLMode:  getenvDefault("PG_SSLMODE", "disable"),
 	}

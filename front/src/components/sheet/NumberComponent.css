@@ -1,0 +1,216 @@
+.number-component {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.number-normal-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative;
+}
+
+.number-display-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.number-display-container.multivalue {
+  flex-direction: row;
+}
+
+.number-display-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.number-display {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #333;
+  min-width: 80px;
+  text-align: center;
+}
+
+.number-arrow {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  color: #667eea;
+  cursor: pointer;
+  padding: 2px 8px;
+  transition: color 0.2s;
+}
+
+.number-arrow:hover {
+  color: #5568d3;
+}
+
+.number-arrow:disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.page-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.page-selector button {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.page-selector button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edit-mode-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.number-edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.number-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.component-variable {
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.component-variable label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.component-variable input[type="text"] {
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.component-variable small {
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.number-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.number-controls input[type="number"] {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.number-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.number-value-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.number-value-item input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.number-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.number-buttons button {
+  padding: 4px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.number-buttons button:hover {
+  background: #5568d3;
+}
+
+.remove-button {
+  padding: 4px 8px;
+  background: #fee;
+  color: #c33;
+  border: 1px solid #c33;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.remove-button:hover {
+  background: #fcc;
+}
+
+.add-value-button {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: 1px dashed #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.add-value-button:hover {
+  background: #e0e0e0;
+  border-color: #ccc;
+}
+

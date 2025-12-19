@@ -1,0 +1,26 @@
+.container-component {
+  display: block;
+  min-height: 100px;
+  padding: 12px;
+  height: 100%;
+  overflow: visible;
+  background: #fafafa;
+  border: 2px dashed #ddd;
+  border-radius: 4px;
+  position: relative;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.container-component:hover {
+  border-color: #667eea;
+  background: #f5f5ff;
+}
+
+.empty-container {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+  pointer-events: none;
+}
+

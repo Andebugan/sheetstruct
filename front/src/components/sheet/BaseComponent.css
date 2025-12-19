@@ -1,0 +1,222 @@
+.base-component {
+  position: absolute;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  min-width: 200px;
+  min-height: 100px;
+  user-select: none;
+  touch-action: none;
+  will-change: left, top;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.base-component.selected {
+  border-color: #667eea;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.base-component.collapsed {
+  height: auto !important;
+}
+
+.component-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  border-radius: 6px 6px 0 0;
+  cursor: move;
+}
+
+.component-title {
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  position: relative;
+}
+
+.component-description-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: #333;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 4px;
+}
+
+.component-title:hover .component-description-tooltip {
+  display: block;
+}
+
+.component-actions {
+  position: relative;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 4px 8px;
+}
+
+.menu-button:hover {
+  color: #333;
+}
+
+.component-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 120px;
+  margin-top: 4px;
+}
+
+.component-menu button {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.component-menu button:hover {
+  background: #f5f5f5;
+}
+
+.component-menu button.danger {
+  color: #c33;
+}
+
+.component-menu button.danger:hover {
+  background: #fee;
+}
+
+.component-content {
+  padding: 12px;
+  height: calc(100% - 40px);
+  overflow: visible;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+.base-component.dragging {
+  opacity: 0.8;
+  z-index: 1000;
+  cursor: grabbing !important;
+  transition: none;
+}
+
+.base-component.selected {
+  cursor: move;
+}
+
+.base-component:not(.dragging):hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.resize-handle {
+  position: absolute;
+  background: #667eea;
+  z-index: 10;
+  transition: background-color 0.1s, transform 0.1s;
+  pointer-events: auto;
+}
+
+.base-component:not(.selected) .resize-handle {
+  display: none;
+}
+
+.resize-handle:hover {
+  background: #5568d3;
+  transform: scale(1.1);
+}
+
+.resize-handle.n,
+.resize-handle.s {
+  width: 100%;
+  height: 4px;
+  cursor: ns-resize;
+}
+
+.resize-handle.n {
+  top: -2px;
+}
+
+.resize-handle.s {
+  bottom: -2px;
+}
+
+.resize-handle.e,
+.resize-handle.w {
+  width: 4px;
+  height: calc(100% - 4px);
+  cursor: ew-resize;
+  top: 2px;
+}
+
+.resize-handle.e {
+  right: -2px;
+}
+
+.resize-handle.w {
+  left: -2px;
+}
+
+.resize-handle.ne {
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+  border-radius: 50%;
+}
+
+.resize-handle.nw {
+  top: -4px;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+  border-radius: 50%;
+}
+
+.resize-handle.se {
+  bottom: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+  border-radius: 50%;
+}
+
+.resize-handle.sw {
+  bottom: -4px;
+  left: -4px;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+  border-radius: 50%;
+}
+

@@ -236,12 +236,14 @@ func NewSheetCloneHanlder(sheetManager managers.ISheetManager) func(c *gin.Conte
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-		
-		sid, err := TryGetSheetIdFromQuery(c)
+
+		sidRaw, err := strconv.Atoi(c.Param("sid"))
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
+			c.JSON(http.StatusBadRequest, "Invalid sheet ID")
 			return
 		}
+		
+		sid := models.SheetID{Value: uint64(sidRaw)}
 
 		sheet, err := sheetManager.Clone(sid, uid)
 

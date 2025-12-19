@@ -245,8 +245,22 @@ func NewUserRefreshTokenHandler(userManager managers.IUserManager) func(c *gin.C
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
+		var idValue uint64
+		switch v := claims["id"].(type) {
+		case uint64:
+			idValue = v
+		case float64:
+			idValue = uint64(v)
+		case int:
+			idValue = uint64(v)
+		case int64:
+			idValue = uint64(v)
+		default:
+			c.JSON(http.StatusBadRequest, "Invalid token claims")
+			return
+		}
 		id := models.UserID{
-			Value: claims["id"].(uint64),
+			Value: idValue,
 		}
 
 		user, err := userManager.Get(id)

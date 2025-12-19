@@ -1,0 +1,327 @@
+.sheet-building-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+.sheet-building-header {
+  background: white;
+  padding: 16px 24px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-button {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background: #e0e0e0;
+}
+
+.sheet-building-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.menu-container {
+  position: relative;
+}
+
+.menu-button,
+.add-component-button {
+  padding: 10px 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.menu-button:hover,
+.add-component-button:hover {
+  background: #5568d3;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 150px;
+  margin-top: 4px;
+}
+
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: white;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.dropdown-menu button:hover {
+  background: #f5f5f5;
+}
+
+.error-banner {
+  padding: 12px 24px;
+  background: #fee;
+  color: #c33;
+  text-align: center;
+}
+
+.sheet-canvas {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  background: #fafafa;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.loading,
+.error {
+  padding: 40px;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #c33;
+}
+
+/* Component-specific styles */
+.number-component,
+.flag-component,
+.text-component,
+.container-component {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.number-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.number-controls label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.number-controls input[type="number"] {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.number-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.number-value-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.number-value-item input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.number-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.number-buttons button {
+  padding: 4px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.number-buttons button:hover {
+  background: #5568d3;
+}
+
+.remove-button {
+  padding: 4px 8px;
+  background: #fee;
+  color: #c33;
+  border: 1px solid #c33;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.remove-button:hover {
+  background: #fcc;
+}
+
+.add-value-button {
+  padding: 8px 16px;
+  background: #f5f5f5;
+  border: 1px dashed #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.add-value-button:hover {
+  background: #e0e0e0;
+  border-color: #ccc;
+}
+
+.flag-values {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.flag-value-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.flag-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.flag-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.text-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.text-editor textarea {
+  font-family: monospace;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.text-editor-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.save-button,
+.cancel-button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.save-button {
+  background: #667eea;
+  color: white;
+}
+
+.save-button:hover {
+  background: #5568d3;
+}
+
+.cancel-button {
+  background: #ddd;
+  color: #333;
+}
+
+.cancel-button:hover {
+  background: #ccc;
+}
+
+.text-preview {
+  min-height: 100px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.text-preview:hover {
+  border-color: #ddd;
+}
+
+.text-preview p {
+  margin: 0;
+}
+
+.empty-container {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+}
+

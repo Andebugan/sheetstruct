@@ -4,6 +4,7 @@ package managers
 
 import (
 	"context"
+	"time"
 
 	"github.com/andebugan/sheetstruct/internal/app/dtos"
 	"github.com/andebugan/sheetstruct/internal/app/repos"
@@ -137,6 +138,15 @@ func (m *SheetManager) Clone(sid models.SheetID, uid models.UserID) (*models.She
 
 	dto := dtos.Sheet{}
 	dto.ToDTO(*sheet)
+
+	// Reset ID and update UId to current user for clone
+	// Update name to indicate it's a clone
+	dto.Id = 0
+	dto.UId = uid.Value
+	if dto.Name != "" {
+		dto.Name = dto.Name + " (копия)"
+	}
+	dto.LastEditTime = time.Now()
 
 	cloneDto, err := m.sheetRepo.Create(m.ctx, &dto)
 	if err != nil {

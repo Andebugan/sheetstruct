@@ -130,7 +130,7 @@ func (m *ComponentManager) Create(sid models.SheetID, uid models.UserID) (*model
 // if component does not exist, or user has no access to it,
 // returns nil, error
 func (m *ComponentManager) Delete(cid models.ComponentID, sid models.SheetID, uid models.UserID) error {
-	return m.componentRepo.Delete(m.ctx, sid.Value)
+	return m.componentRepo.Delete(m.ctx, cid.Value)
 }
 
 // Finds component with matching id and updates it's values,
