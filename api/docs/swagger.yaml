@@ -32,13 +32,6 @@ definitions:
       password:
         type: string
     type: object
-  managers.SheetFilter:
-    properties:
-      newest:
-        type: boolean
-      template:
-        type: boolean
-    type: object
   models.Component:
     properties:
       description:
@@ -79,18 +72,13 @@ definitions:
     type: object
   models.Sheet:
     properties:
-      components:
-        description: Array of component ID's connected to this sheet
-        items:
-          $ref: '#/definitions/models.ComponentID'
-        type: array
       description:
         type: string
       id:
         allOf:
         - $ref: '#/definitions/models.SheetID'
         description: Sheet Id
-      lastWriteTime:
+      lastEditTime:
         description: Updates each time sheet is modified, used for sorting
         type: string
       name:
@@ -158,6 +146,41 @@ paths:
       tags:
       - Utility
   /sheet:
+    patch:
+      consumes:
+      - application/json
+      description: Updates sheet
+      parameters:
+      - description: Updated sheet
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Sheet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Sheet'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Updates sheet
+      tags:
+      - Sheet
     post:
       consumes:
       - application/json
@@ -177,6 +200,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create new sheet
       tags:
       - Sheet
@@ -210,13 +235,15 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete sheet
       tags:
       - Sheet
     get:
       consumes:
       - application/json
-      description: Get multiple sheets avaliable to user
+      description: Get single sheet by id
       parameters:
       - description: Sheet ID
         in: query
@@ -242,40 +269,9 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Get sheets
-      tags:
-      - Sheet
-    patch:
-      consumes:
-      - application/json
-      description: Updates sheet by id
-      parameters:
-      - description: Updated sheet
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/models.Sheet'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Sheet'
-        "401":
-          description: Unauthorized
-          schema:
-            type: string
-        "404":
-          description: Not Found
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Updates sheet
+      security:
+      - BearerAuth: []
+      summary: Get sheet by id
       tags:
       - Sheet
     put:
@@ -307,6 +303,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Clone sheet
       tags:
       - Sheet
@@ -336,6 +334,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Gets components
       tags:
       - Component
@@ -373,6 +373,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Updates component
       tags:
       - Component
@@ -401,6 +403,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create new component
       tags:
       - Component
@@ -435,6 +439,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete component
       tags:
       - Component
@@ -470,6 +476,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get component
       tags:
       - Component
@@ -507,6 +515,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Clone component
       tags:
       - Component
@@ -515,13 +525,6 @@ paths:
       consumes:
       - application/json
       description: Returns filtered sheet collection avaliable to user
-      parameters:
-      - description: Filter settings
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/managers.SheetFilter'
       produces:
       - application/json
       responses:
@@ -529,7 +532,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/managers.SheetFilter'
+              $ref: '#/definitions/models.Sheet'
             type: array
         "401":
           description: Unauthorized
@@ -539,6 +542,8 @@ paths:
           description: Internal Server Error
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get sheets
       tags:
       - Sheet

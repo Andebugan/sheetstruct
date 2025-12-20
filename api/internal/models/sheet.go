@@ -9,6 +9,16 @@ type Sheet struct {
 	Name          string
 	Description   string
 	Template      bool
-	LastWriteTime time.Time   // Updates each time sheet is modified, used for sorting
-	Components    []ComponentID // Array of component ID's connected to this sheet
+	LastEditTime time.Time   // Updates each time sheet is modified, used for sorting
+}
+
+func NewDefaultSheet(uid UserID) Sheet {
+	return Sheet{
+		Id: SheetID{ Value: 0 },
+		UId: uid,
+		Name: "sheet",
+		Description: "",
+		Template: false,
+		LastEditTime: time.Now(),
+	}
 }

@@ -40,6 +40,11 @@ const docTemplate = `{
         },
         "/sheet": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Creates new empty sheet",
                 "consumes": [
                     "application/json"
@@ -71,155 +76,14 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/sheet/{sid}": {
-            "get": {
-                "description": "Get multiple sheets avaliable to user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Sheet"
-                ],
-                "summary": "Get sheets",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Sheet ID",
-                        "name": "sid",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Sheet"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Create deep clone for sheet with provided sid",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Sheet"
-                ],
-                "summary": "Clone sheet",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Sheet ID",
-                        "name": "sid",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Sheet"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes sheet by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Sheet"
-                ],
-                "summary": "Delete sheet",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Sheet ID",
-                        "name": "sid",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
             },
             "patch": {
-                "description": "Updates sheet by id",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Updates sheet",
                 "consumes": [
                     "application/json"
                 ],
@@ -269,8 +133,174 @@ const docTemplate = `{
                 }
             }
         },
+        "/sheet/{sid}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get single sheet by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Get sheet by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Sheet"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create deep clone for sheet with provided sid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Clone sheet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Sheet"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Deletes sheet by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sheet"
+                ],
+                "summary": "Delete sheet",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Sheet ID",
+                        "name": "sid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/sheet/{sid}/component": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Creates new component inside specified sheet",
                 "consumes": [
                     "application/json"
@@ -313,6 +343,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Creates new component inside specified sheet",
                 "consumes": [
                     "application/json"
@@ -355,6 +390,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Updates component with recieved data",
                 "consumes": [
                     "application/json"
@@ -413,6 +453,11 @@ const docTemplate = `{
         },
         "/sheet/{sid}/component/{cid}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get gets single component inside specified sheet",
                 "consumes": [
                     "application/json"
@@ -465,6 +510,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Creates copy of component inside specified sheet",
                 "consumes": [
                     "application/json"
@@ -520,6 +570,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Deletes component inside specified sheet",
                 "consumes": [
                     "application/json"
@@ -571,6 +626,11 @@ const docTemplate = `{
         },
         "/sheets": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Returns filtered sheet collection avaliable to user",
                 "consumes": [
                     "application/json"
@@ -582,24 +642,13 @@ const docTemplate = `{
                     "Sheet"
                 ],
                 "summary": "Get sheets",
-                "parameters": [
-                    {
-                        "description": "Filter settings",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/managers.SheetFilter"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/managers.SheetFilter"
+                                "$ref": "#/definitions/models.Sheet"
                             }
                         }
                     },
@@ -930,17 +979,6 @@ const docTemplate = `{
                 }
             }
         },
-        "managers.SheetFilter": {
-            "type": "object",
-            "properties": {
-                "newest": {
-                    "type": "boolean"
-                },
-                "template": {
-                    "type": "boolean"
-                }
-            }
-        },
         "models.Component": {
             "type": "object",
             "properties": {
@@ -1007,13 +1045,6 @@ const docTemplate = `{
         "models.Sheet": {
             "type": "object",
             "properties": {
-                "components": {
-                    "description": "Array of component ID's connected to this sheet",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.ComponentID"
-                    }
-                },
                 "description": {
                     "type": "string"
                 },
@@ -1025,7 +1056,7 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "lastWriteTime": {
+                "lastEditTime": {
                     "description": "Updates each time sheet is modified, used for sorting",
                     "type": "string"
                 },

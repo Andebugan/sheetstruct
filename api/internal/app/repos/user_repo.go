@@ -6,14 +6,14 @@ import (
 	"github.com/andebugan/sheetstruct/internal/app/dtos"
 )
 
-// UserRepository defines user-specific operations
+// UserRepository defines user-specific database operations
 type IUserRepository interface {
 	IRepository[dtos.User]
 	
 	// FindByEmail finds a user by email
 	FindByEmail(ctx context.Context, email string) (*dtos.User, error)
 
-	// FindByEmail finds a user by email
+	// FindByName finds a user by email
 	FindByName(ctx context.Context, name string) (*dtos.User, error)
 
 	// Returns error if user with same email exists

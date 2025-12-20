@@ -7,6 +7,7 @@ var ErrUserNotFound = errors.New("Unable to find requested user")
 var ErrUserNameAlredyExists = errors.New("User with provided name already exists")
 var ErrUserEmailAlredyExists = errors.New("User with provided email already exists")
 
+var ErrSheetAccessDenied = errors.New("Access to requrested sheet was denied")
 var ErrSheetNotFound = errors.New("Unable to find requested user")
 var ErrSheetAlredyExists = errors.New("User already exists")
 

@@ -33,11 +33,11 @@ func TryGetSheetIdFromQuery(c *gin.Context) (models.SheetID, error) {
 //  @tags			Sheet
 //  @accept 		json
 //  @produce 		json
-//	@param			request body managers.SheetFilter true "Filter settings"
-//  @success 		200 {object} []managers.SheetFilter
+//  @success 		200 {object} []models.Sheet
 //  @failure		401 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheets [get]
+//	@security       BearerAuth
 func NewSheetsGetHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -46,15 +46,7 @@ func NewSheetsGetHandler(sheetManager managers.ISheetManager) func(c *gin.Contex
 			return
 		}
 
-		// Get filter
-		var filter managers.SheetFilter
-		err = c.BindJSON(&filter)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-		
-		sheets, err := sheetManager.GetMany(filter, uid)
+		sheets, err := sheetManager.GetMany(uid)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
@@ -67,8 +59,8 @@ func NewSheetsGetHandler(sheetManager managers.ISheetManager) func(c *gin.Contex
 
 // Creates handler func for getting single sheet
 //
-//  @summary		Get sheets
-//  @description 	Get multiple sheets avaliable to user
+//  @summary		Get sheet by id
+//  @description 	Get single sheet by id
 //  @tags			Sheet
 //  @accept 		json
 //  @produce 		json
@@ -78,6 +70,7 @@ func NewSheetsGetHandler(sheetManager managers.ISheetManager) func(c *gin.Contex
 //  @failure		404 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid} [get]
+//	@security       BearerAuth
 func NewSheetGetHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -117,6 +110,7 @@ func NewSheetGetHandler(sheetManager managers.ISheetManager) func(c *gin.Context
 //  @failure 		401 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet [post]
+//	@security       BearerAuth
 func NewSheetCreateHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -149,6 +143,7 @@ func NewSheetCreateHandler(sheetManager managers.ISheetManager) func(c *gin.Cont
 //  @failure		404 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid} [delete]
+//	@security       BearerAuth
 func NewSheetDeleteHandler(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -180,7 +175,7 @@ func NewSheetDeleteHandler(sheetManager managers.ISheetManager) func(c *gin.Cont
 // Creates handler func for updating sheet
 //
 //  @summary		Updates sheet
-//  @description 	Updates sheet by id
+//  @description 	Updates sheet
 //  @tags			Sheet
 //  @accept 		json
 //  @produce 		json
@@ -189,7 +184,8 @@ func NewSheetDeleteHandler(sheetManager managers.ISheetManager) func(c *gin.Cont
 //  @failure		401 {object} string
 //  @failure		404 {object} string
 //  @failure		500 {object} string
-//  @router 		/sheet/{sid} [patch]
+//  @router 		/sheet [patch]
+//	@security       BearerAuth
 func NewSheetUpdateHanlder(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -232,6 +228,7 @@ func NewSheetUpdateHanlder(sheetManager managers.ISheetManager) func(c *gin.Cont
 //  @failure		404 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid} [put]
+//	@security       BearerAuth
 func NewSheetCloneHanlder(sheetManager managers.ISheetManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)

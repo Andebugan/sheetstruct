@@ -13,14 +13,14 @@ import (
 type IUserManager interface {
 	// Finds user by ID,
 	// if user doesn't exist - returns nil and error
-	Get(uid models.UserID) (models.User, error)
+	Get(uid models.UserID) (*models.User, error)
 
 	// Returns collection of all users
 	GetMany() ([]models.User, error)
 
 	// Registers new user,
 	// if creation is successfull - returns created user
-	Create(userData models.NewUserData) (models.User, error)
+	Create(userData models.NewUserData) (*models.User, error)
 
 	// Deletes user by id,
 	// if doesn't exist - returns error
@@ -28,13 +28,13 @@ type IUserManager interface {
 
 	// Finds user with matching id and updates it's values,
 	// if user doesn' exit - returns error
-	Update(user models.User) (models.User, error)
+	Update(user models.User) (*models.User, error)
 
 	// Returns user with matching credentials,
 	// username and email can be both used as login,
 	// if user doesn't exist or password is incorrect,
 	// returns nil and error
-	Login(login string, password string) (models.User, error)
+	Login(login string, password string) (*models.User, error)
 }
 
 // User manager data
@@ -53,22 +53,24 @@ func NewUserManager(ctx context.Context, userRepo repos.IUserRepository) *UserMa
 
 // Finds user by ID,
 // if user doesn't exist - returns nil and error
-func (u *UserManager) Get(uid models.UserID) (models.User, error) {
-	user, err := u.userRepo.FindByID(u.ctx, uid.Value)
+func (m *UserManager) Get(uid models.UserID) (*models.User, error) {
+	userDto, err := m.userRepo.FindByID(m.ctx, uid.Value)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	return user.FromDTO(), nil
+	user := userDto.FromDTO()
+
+	return &user, nil
 }
 
 // Returns collection of all users
-func (u *UserManager) GetMany() ([]models.User, error) {
-	userDtos, err := u.userRepo.GetAll(u.ctx, -1, -1)
+func (m *UserManager) GetMany() ([]models.User, error) {
+	userDtos, err := m.userRepo.GetAll(m.ctx, -1, -1)
 
 	if err != nil {
-		return []models.User{}, err
+		return nil, err
 	}
 
 	users := make([]models.User, len(userDtos))
@@ -81,15 +83,15 @@ func (u *UserManager) GetMany() ([]models.User, error) {
 
 // Registers new user
 // if creation is successfull - returns created user
-func (u *UserManager) Create(userData models.NewUserData) (models.User, error) {
-	err := u.userRepo.CheckDuplicateName(u.ctx, userData.Name)
+func (m *UserManager) Create(userData models.NewUserData) (*models.User, error) {
+	err := m.userRepo.CheckDuplicateName(m.ctx, userData.Name)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	err = u.userRepo.CheckDuplicateEmail(u.ctx, userData.Name)
+	err = m.userRepo.CheckDuplicateEmail(m.ctx, userData.Email)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	userDto := dtos.User{}
@@ -102,51 +104,55 @@ func (u *UserManager) Create(userData models.NewUserData) (models.User, error) {
 		Password: userData.Password,
 	})
 
-	user, err := u.userRepo.Create(u.ctx, &userDto)
+	newUserDto, err := m.userRepo.Create(m.ctx, &userDto)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	return user.FromDTO(), nil
+	user := newUserDto.FromDTO()
+
+	return &user, nil
 }
 
-// Deletes user by id,
-// if doesn't exist - returns error
-func (u *UserManager) Delete(uid models.UserID) error {
-	return u.userRepo.Delete(u.ctx, uid.Value)
+// Deletes user by id
+func (m *UserManager) Delete(uid models.UserID) error {
+	return m.userRepo.Delete(m.ctx, uid.Value)
 }
 
 // Finds user with matching id and updates it's values,
 // if user doesn' exit - returns error
-func (u *UserManager) Update(user models.User) (models.User, error) {
+func (m *UserManager) Update(user models.User) (*models.User, error) {
 	userDto := dtos.User{}
 	userDto.ToDTO(user)
 
-	updatedDto, err := u.userRepo.Update(u.ctx, &userDto)
+	updatedDto, err := m.userRepo.Update(m.ctx, &userDto)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	return updatedDto.FromDTO(), nil
+	updatedUser := updatedDto.FromDTO()
+
+	return &updatedUser, nil
 }
 
 // Returns user with matching credentials,
 // if user doesn't exist or password is incorrect,
 // returns nil and error
-func (u *UserManager) Login(login string, password string) (models.User, error) {
-
+func (m *UserManager) Login(login string, password string) (*models.User, error) {
 	// Try find by name
-	user, err := u.userRepo.FindByName(u.ctx, login)
-	if err == nil && user.Password == password {
-		return user.FromDTO(), nil
+	userDto, err := m.userRepo.FindByName(m.ctx, login)
+	if err == nil && userDto.Password == password {
+		user := userDto.FromDTO()
+		return &user, nil
 	}
 
 	// Try find by email
-	user, err = u.userRepo.FindByEmail(u.ctx, login)
-	if err == nil && user.Password == password {
-		return user.FromDTO(), nil
+	userDto, err = m.userRepo.FindByEmail(m.ctx, login)
+	if err == nil && userDto.Password == password {
+		user := userDto.FromDTO()
+		return &user, nil
 	}
 
-	return models.User{}, app.ErrUserAuthFailed
+	return nil, app.ErrUserAuthFailed
 }

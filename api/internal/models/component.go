@@ -30,3 +30,17 @@ type Component struct {
 	VarValue    VariableValue
 	Style       Style
 }
+
+func NewDefaultComponent(sid SheetID, uid UserID) Component {
+	return Component{
+		Id: ComponentID{ Value: 0 },
+		SId: sid,
+		UId: uid,
+		Name: "New component",
+		Description: "",
+		Template: false,
+		VarName: "",
+		VarType: Text,
+		Style: "",
+	}
+}

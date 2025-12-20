@@ -24,7 +24,7 @@ func NewGormUserRepository(db *gorm.DB) *GormUserRepository {
 	}
 }
 
-// FindByEmail finds a user with matching email
+// Finds a user with matching email
 func (r *GormUserRepository) FindByEmail(ctx context.Context, email string) (*dtos.User, error) {
 	var user dtos.User
 	err := r.DB.WithContext(ctx).Where("email = ?", email).First(&user).Error

@@ -38,6 +38,7 @@ func TryGetComponentIdFromQuery(c *gin.Context) (models.ComponentID, error) {
 //  @failure		401 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component [get]
+//	@security       BearerAuth
 func NewComponentsGetHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -76,6 +77,7 @@ func NewComponentsGetHandler(componentManager managers.IComponentManager) func(c
 //  @failure		404 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component/{cid} [get]
+//	@security       BearerAuth
 func NewComponentGetHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -124,6 +126,7 @@ func NewComponentGetHandler(componentManager managers.IComponentManager) func(c 
 //  @failure		404 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component/{cid} [put]
+//	@security       BearerAuth
 func NewComponentCloneHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -170,6 +173,7 @@ func NewComponentCloneHandler(componentManager managers.IComponentManager) func(
 //  @failure		401 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component [post]
+//	@security       BearerAuth
 func NewComponentCreateHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -208,6 +212,7 @@ func NewComponentCreateHandler(componentManager managers.IComponentManager) func
 //  @failure		404 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component/{cid} [delete]
+//	@security       BearerAuth
 func NewComponentDeleteHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)
@@ -256,6 +261,7 @@ func NewComponentDeleteHandler(componentManager managers.IComponentManager) func
 //  @failure		404 {object} string
 //  @failure		500 {object} string
 //  @router 		/sheet/{sid}/component [patch]
+//	@security       BearerAuth
 func NewComponentUpdateHandler(componentManager managers.IComponentManager) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		uid, err := TryGetUidFromToken(c)

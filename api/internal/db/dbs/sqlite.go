@@ -43,7 +43,8 @@ func InitSqliteDatabase() (*gorm.DB, error) {
 	// AutoMigrate - Creates tables automatically
 	err = db.AutoMigrate(
 		&dtos.User{},
-		// Add other models here
+		&dtos.Sheet{},
+		&dtos.Component{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to auto-migrate database: %w", err)

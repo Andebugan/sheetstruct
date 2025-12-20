@@ -41,12 +41,14 @@ func main() {
 
 	// Initalize repositories
 	userRepository := repos.NewGormUserRepository(db)
+	sheetRepository := repos.NewGormSheetRepository(db)
+	componentRepository := repos.NewGormComponentRepository(db)
 	ctx := context.Background()
 
 	// Initialize managers
 	userManager := managers.NewUserManager(ctx, userRepository)
-	sheetManager := managers.NewSheetManager()
-	componentManager := managers.NewComponentManager()
+	sheetManager := managers.NewSheetManager(ctx, userRepository, sheetRepository)
+	componentManager := managers.NewComponentManager(ctx, userRepository, sheetRepository, componentRepository)
 
 	// Initialize api
 	router := gin.Default()
