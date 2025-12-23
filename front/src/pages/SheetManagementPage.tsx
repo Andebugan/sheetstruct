@@ -255,9 +255,9 @@ export const SheetManagementPage: React.FC = () => {
         </div>
       </div>
 
-      {loading ? (
-        <div className="loading">Загрузка листов...</div>
-      ) : (
+      {loading && <div className="loading">Загрузка листов...</div>}
+
+      {!loading && sheets.length !== 0 ? (
         <div className="sheets-grid">
           {sheets.map((sheet) => {
             const sheetId = typeof sheet.Id === 'object' ? sheet.Id.Value : sheet.Id;
@@ -308,11 +308,10 @@ export const SheetManagementPage: React.FC = () => {
               </div>
             );
           })}
-          {sheets.length === 0 && (
-            <div className="empty-state">
-              <p>Листы не найдены. Создайте свой первый лист!</p>
-            </div>
-          )}
+        </div>
+      ) : (
+        <div className="empty-state">
+          <p>Листы не найдены. Создайте свой первый лист!</p>
         </div>
       )}
 
