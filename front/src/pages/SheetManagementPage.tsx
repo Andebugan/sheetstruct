@@ -255,64 +255,64 @@ export const SheetManagementPage: React.FC = () => {
         </div>
       </div>
 
-      {loading && <div className="loading">Загрузка листов...</div>}
-
-      {!loading && sheets.length !== 0 ? (
-        <div className="sheets-grid">
-          {sheets.map((sheet) => {
-            const sheetId = typeof sheet.Id === 'object' ? sheet.Id.Value : sheet.Id;
-            return (
-              <div key={sheetId} className="sheet-card">
-                <div className="sheet-card-header">
-                  <h3>{sheet.Name}</h3>
-                  {sheet.Template && <span className="template-badge">Шаблон</span>}
+      { loading ? (
+          <div className="loading">Загрузка листов...</div> 
+        ) : sheets.length === 0 ? (
+          <div className="empty-state">
+            <p>Листы не найдены. Создайте свой первый лист!</p>
+          </div>
+        ) : (
+          <div className="sheets-grid">
+            {sheets.map((sheet) => {
+              const sheetId = typeof sheet.Id === 'object' ? sheet.Id.Value : sheet.Id;
+              return (
+                <div key={sheetId} className="sheet-card">
+                  <div className="sheet-card-header">
+                    <h3>{sheet.Name}</h3>
+                    {sheet.Template && <span className="template-badge">Шаблон</span>}
+                  </div>
+                  <p className="sheet-description">{sheet.Description || 'Без описания'}</p>
+                  {sheet.LastWriteTime && (
+                    <p className="sheet-date">
+                      Последнее изменение: {new Date(sheet.LastWriteTime).toLocaleDateString('ru-RU')}
+                    </p>
+                  )}
+                  <div className="sheet-actions">
+                    <button
+                      className="action-button primary"
+                      onClick={() => navigate(`/sheet/${sheetId}`)}
+                    >
+                      Открыть
+                    </button>
+                    <button
+                      className="action-button"
+                      onClick={() => setShowEditModal(sheet)}
+                    >
+                      Редактировать
+                    </button>
+                    <button
+                      className="action-button"
+                      onClick={() => handleCloneSheet(sheetId)}
+                    >
+                      Клонировать
+                    </button>
+                    <button
+                      className="action-button"
+                      onClick={() => handleExportSheet(sheet)}
+                    >
+                      Экспорт
+                    </button>
+                    <button
+                      className="action-button danger"
+                      onClick={() => setShowDeleteConfirm(sheetId)}
+                    >
+                      Удалить
+                    </button>
+                  </div>
                 </div>
-                <p className="sheet-description">{sheet.Description || 'Без описания'}</p>
-                {sheet.LastWriteTime && (
-                  <p className="sheet-date">
-                    Последнее изменение: {new Date(sheet.LastWriteTime).toLocaleDateString('ru-RU')}
-                  </p>
-                )}
-                <div className="sheet-actions">
-                  <button
-                    className="action-button primary"
-                    onClick={() => navigate(`/sheet/${sheetId}`)}
-                  >
-                    Открыть
-                  </button>
-                  <button
-                    className="action-button"
-                    onClick={() => setShowEditModal(sheet)}
-                  >
-                    Редактировать
-                  </button>
-                  <button
-                    className="action-button"
-                    onClick={() => handleCloneSheet(sheetId)}
-                  >
-                    Клонировать
-                  </button>
-                  <button
-                    className="action-button"
-                    onClick={() => handleExportSheet(sheet)}
-                  >
-                    Экспорт
-                  </button>
-                  <button
-                    className="action-button danger"
-                    onClick={() => setShowDeleteConfirm(sheetId)}
-                  >
-                    Удалить
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="empty-state">
-          <p>Листы не найдены. Создайте свой первый лист!</p>
-        </div>
+              );
+            })}
+          </div>
       )}
 
       {showCreateModal && (

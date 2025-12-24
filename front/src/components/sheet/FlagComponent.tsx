@@ -10,10 +10,11 @@ interface FlagComponentProps {
   onUpdate: (component: Component) => void;
   onDelete: () => void;
   onClone: () => void;
-  onResize: (style: StyleParams) => void;
-  onMove: (x: number, y: number) => void;
-  selected?: boolean;
+  onResize: (style: StyleParams) => Promise<void>;
+  onMove: (x: number, y: number) => Promise<void>;
+  isSelected: () => boolean;
   onSelect?: () => void;
+  onDeselect?: () => void;
   variableContext?: VariableContext;
 }
 
@@ -25,8 +26,9 @@ export const FlagComponent: React.FC<FlagComponentProps> = ({
   onClone,
   onResize,
   onMove,
-  selected,
+  isSelected,
   onSelect,
+  onDeselect,
   variableContext,
 }) => {
   const [values, setValues] = useState<boolean[]>([]);
@@ -90,8 +92,9 @@ export const FlagComponent: React.FC<FlagComponentProps> = ({
       onClone={onClone}
       onResize={onResize}
       onMove={onMove}
-      selected={selected}
+      isSelected={isSelected}
       onSelect={onSelect}
+      onDeselect={onDeselect}
       variableContext={variableContext}
     >
       <div className="flag-component">
@@ -166,7 +169,7 @@ export const FlagComponent: React.FC<FlagComponentProps> = ({
                 </button>
               </div>
             )}
-            {selected && (
+            {isSelected() && (
               <button 
                 onClick={() => setIsEditMode(true)} 
                 className="edit-mode-button"

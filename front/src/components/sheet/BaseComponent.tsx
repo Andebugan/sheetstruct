@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { visitNodes } from 'typescript';
 import { Component, StyleParams } from '../../types';
 import { VariableContext } from '../../utils/variableResolver';
 import './BaseComponent.css';
@@ -9,10 +10,11 @@ interface BaseComponentProps {
   onUpdate: (component: Component) => void;
   onDelete: () => void;
   onClone: () => void;
-  onResize: (style: StyleParams) => void;
-  onMove: (x: number, y: number, targetContainerId?: number) => void;
-  selected?: boolean;
+  onResize: (style: StyleParams) => Promise<void>;
+  onMove: (x: number, y: number, targetContainerId?: number) => Promise<void>;
+  isSelected: () => boolean;
   onSelect?: () => void;
+  onDeselect?: () => void;
   children?: React.ReactNode;
   variableContext?: VariableContext;
   parentContainerId?: number;
@@ -27,8 +29,9 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
   onClone,
   onResize,
   onMove,
-  selected,
+  isSelected,
   onSelect,
+  onDeselect,
   children,
   parentContainerId,
   parentContainerPosition,
@@ -37,7 +40,10 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
   const [showMenu, setShowMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [resizeDragOffset, setResizeDragOffset] = useState({ x: 0, y: 0 });
   const [visualPosition, setVisualPosition] = useState({ x: style.x, y: style.y });
+  const [visualSize, setVisualSize] = useState({ width: style.width, height: style.height, x: style.x, y: style.y, handle: '' });
+  const [isHovered, setIsHovered] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
@@ -47,6 +53,20 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
       setVisualPosition({ x: absX, y: absY });
     }
   }, [style.x, style.y, isDragging, parentContainerPosition]);
+
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsHovered(true)
+  }
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsHovered(false)
+  }
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -62,11 +82,11 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
     e.preventDefault();
     e.stopPropagation();
 
-    if (!selected) {
+    if (!isSelected?.()) {
       onSelect?.();
-      return;
     }
-    if (selected) {
+
+    if (isSelected?.()) {
       const absX = parentContainerPosition ? style.x + parentContainerPosition.x : style.x;
       const absY = parentContainerPosition ? style.y + parentContainerPosition.y : style.y;
       
@@ -80,106 +100,121 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
   };
 
   useEffect(() => {
-    if (!isDragging) return;
-
-    let currentX = visualPosition.x;
-    let currentY = visualPosition.y;
-    let targetContainerId: number | undefined = parentContainerId;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const newX = e.clientX - dragOffset.x;
-      const newY = e.clientY - dragOffset.y;
-      const boundedX = Math.max(-50, newX);
-      const boundedY = Math.max(-50, newY);
-      currentX = boundedX;
-      currentY = boundedY;
-      setVisualPosition({ x: boundedX, y: boundedY });
-
-      const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
-      if (elementUnder) {
-        const containerElement = elementUnder.closest('[data-container-id]');
-        if (containerElement && containerElement.classList.contains('container-component')) {
-          const containerIdAttr = containerElement.getAttribute('data-container-id');
-          if (containerIdAttr) {
-            targetContainerId = parseInt(containerIdAttr);
+    if (isDragging) {
+      let currentX = visualPosition.x;
+      let currentY = visualPosition.y;
+      let targetContainerId: number | undefined = parentContainerId;
+  
+      const handleMouseMove = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const newX = e.clientX - dragOffset.x;
+        const newY = e.clientY - dragOffset.y;
+        const boundedX = Math.max(-50, newX);
+        const boundedY = Math.max(-50, newY);
+        currentX = boundedX;
+        currentY = boundedY;
+        setVisualPosition({ x: boundedX, y: boundedY });
+  
+        const elementUnder = document.elementFromPoint(e.clientX, e.clientY);
+        if (elementUnder) {
+          const containerElement = elementUnder.closest('[data-container-id]');
+          if (containerElement && containerElement.classList.contains('container-component')) {
+            const containerIdAttr = containerElement.getAttribute('data-container-id');
+            if (containerIdAttr) {
+              targetContainerId = parseInt(containerIdAttr);
+            }
+          } else {
+            targetContainerId = undefined;
           }
-        } else {
-          targetContainerId = undefined;
         }
+      };
+  
+      const handleMouseUp = () => {
+        onMove(currentX, currentY, targetContainerId).then(() => {
+          setIsDragging(false);
+        });
+  
+        if (isSelected()) {
+          onDeselect?.();
+        }
+      };
+  
+      document.addEventListener('mousemove', handleMouseMove, { passive: false });
+      document.addEventListener('mouseup', handleMouseUp, { passive: false });
+  
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+
+    if (isResizing) {
+      const onMouseMove = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const deltaX = e.clientX - resizeDragOffset.x;
+        const deltaY = e.clientY - resizeDragOffset.y;
+
+        let handle = visualSize.handle;
+        let width = style.width;
+        let height = style.height;
+        let x = style.x;
+        let y = style.y;
+  
+        if (handle.includes('e')) {
+          width = Math.max(100, style.width + deltaX);
+        }
+        if (handle.includes('w')) {
+          const widthChange = style.width - deltaX;
+          if (widthChange >= 100) {
+            width = widthChange;
+            x = style.x + deltaX;
+          }
+        }
+        if (handle.includes('s')) {
+          height = Math.max(50, style.height + deltaY);
+        }
+        if (handle.includes('n')) {
+          const heightChange = style.height - deltaY;
+          if (heightChange >= 50) {
+            height = heightChange;
+            y = style.y + deltaY;
+          }
+        }
+
+        setVisualSize({ width, height, x, y, handle })
       }
-    };
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-      onMove(currentX, currentY, targetContainerId);
-    };
+      const onMouseUp = () => {
+        onResize({ ...style, width: visualSize.width, height: visualSize.height, x: visualSize.x, y: visualSize.y }).then(() => {
+            setIsResizing(false);
+        })
+      };
 
-    document.addEventListener('mousemove', handleMouseMove, { passive: false });
-    document.addEventListener('mouseup', handleMouseUp, { passive: false });
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, dragOffset.x, dragOffset.y, onMove, parentContainerId]);
+      document.addEventListener('mousemove', onMouseMove, { passive: false });
+      document.addEventListener('mouseup', onMouseUp, { passive: false });
+  
+      return () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      };
+    }
+  });
 
   const handleResize = (e: React.MouseEvent, handle: string) => {
     e.preventDefault();
     e.stopPropagation();
+
+    resizeDragOffset.x = e.clientX;
+    resizeDragOffset.y = e.clientY;
     
+    visualSize.x = style.x;
+    visualSize.y = style.y;
+    visualSize.width = style.width;
+    visualSize.height = style.height;
+    visualSize.handle = handle;
     setIsResizing(true);
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const startWidth = style.width;
-    const startHeight = style.height;
-    const startLeft = style.x;
-    const startTop = style.y;
-
-    const onMouseMove = (moveEvent: MouseEvent) => {
-      moveEvent.preventDefault();
-      moveEvent.stopPropagation();
-      const deltaX = moveEvent.clientX - startX;
-      const deltaY = moveEvent.clientY - startY;
-
-      let newWidth = startWidth;
-      let newHeight = startHeight;
-      let newX = startLeft;
-      let newY = startTop;
-
-      if (handle.includes('e')) {
-        newWidth = Math.max(100, startWidth + deltaX);
-      }
-      if (handle.includes('w')) {
-        const widthChange = startWidth - deltaX;
-        if (widthChange >= 100) {
-          newWidth = widthChange;
-          newX = startLeft + deltaX;
-        }
-      }
-      if (handle.includes('s')) {
-        newHeight = Math.max(50, startHeight + deltaY);
-      }
-      if (handle.includes('n')) {
-        const heightChange = startHeight - deltaY;
-        if (heightChange >= 50) {
-          newHeight = heightChange;
-          newY = startTop + deltaY;
-        }
-      }
-
-      onResize({ ...style, width: newWidth, height: newHeight, x: newX, y: newY });
-    };
-
-    const onMouseUp = () => {
-      setIsResizing(false);
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-    };
-
-    document.addEventListener('mousemove', onMouseMove, { passive: false });
-    document.addEventListener('mouseup', onMouseUp, { passive: false });
   };
 
   const toggleCollapse = () => {
@@ -188,8 +223,11 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
     onResize({ ...style, collapsed: newCollapsed });
   };
 
-  let actualX: number;
-  let actualY: number;
+  let actualX = style.x;
+  let actualY = style.y;
+
+  let actualHeight = style.height;
+  let actualWidth = style.width;
   
   if (isDragging) {
     actualX = parentContainerPosition 
@@ -198,21 +236,32 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
     actualY = parentContainerPosition 
       ? visualPosition.y - parentContainerPosition.y
       : visualPosition.y;
-  } else {
-    actualX = style.x;
-    actualY = style.y;
+  }
+
+  if (isResizing) {
+    actualX = parentContainerPosition
+      ? visualSize.x - parentContainerPosition.x
+      : visualSize.x;
+    actualY = parentContainerPosition
+      ? visualSize.y - parentContainerPosition.y
+      : visualSize.y;
+
+    actualHeight = visualSize.height;
+    actualWidth = visualSize.width;
   }
 
   return (
     <div
-      className={`base-component ${selected ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''} ${isDragging ? 'dragging' : ''}`}
+      className={`base-component ${isSelected?.() || isHovered ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''} ${isDragging ? 'dragging' : ''}`}
       style={{
         left: `${actualX}px`,
         top: `${actualY}px`,
-        width: `${style.width}px`,
-        height: isCollapsed ? 'auto' : `${style.height}px`,
+        width: `${actualWidth}px`,
+        height: isCollapsed ? 'auto' : `${actualHeight}px`,
       }}
       onMouseDown={handleMouseDown}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="component-header">
         <div className="component-title" onDoubleClick={toggleCollapse}>
@@ -237,13 +286,16 @@ export const BaseComponent: React.FC<BaseComponentProps> = ({
 
       {!isCollapsed && (
         <>
-          <div className="component-content">{children}</div>
-          {selected && !isCollapsed && (
+          <div className="component-content"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            >{children}</div>
+          {isHovered && !isCollapsed && (
             <>
-              <div className="resize-handle n" onMouseDown={(e) => handleResize(e, 'n')} />
-              <div className="resize-handle s" onMouseDown={(e) => handleResize(e, 's')} />
-              <div className="resize-handle e" onMouseDown={(e) => handleResize(e, 'e')} />
-              <div className="resize-handle w" onMouseDown={(e) => handleResize(e, 'w')} />
+              <div className="resize-handle ne" onMouseDown={(e) => handleResize(e, 'ne')} />
+              <div className="resize-handle nw" onMouseDown={(e) => handleResize(e, 'nw')} />
+              <div className="resize-handle se" onMouseDown={(e) => handleResize(e, 'se')} />
+              <div className="resize-handle sw" onMouseDown={(e) => handleResize(e, 'sw')} />
               <div className="resize-handle ne" onMouseDown={(e) => handleResize(e, 'ne')} />
               <div className="resize-handle nw" onMouseDown={(e) => handleResize(e, 'nw')} />
               <div className="resize-handle se" onMouseDown={(e) => handleResize(e, 'se')} />

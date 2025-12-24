@@ -10,10 +10,11 @@ interface NumberComponentProps {
   onUpdate: (component: Component) => void;
   onDelete: () => void;
   onClone: () => void;
-  onResize: (style: StyleParams) => void;
-  onMove: (x: number, y: number) => void;
-  selected?: boolean;
+  onResize: (style: StyleParams) => Promise<void>;
+  onMove: (x: number, y: number) => Promise<void>;
+  isSelected: () => boolean;
   onSelect?: () => void;
+  onDeselect?: () => void;
   variableContext?: VariableContext;
 }
 
@@ -25,8 +26,9 @@ export const NumberComponent: React.FC<NumberComponentProps> = ({
   onClone,
   onResize,
   onMove,
-  selected,
+  isSelected,
   onSelect,
+  onDeselect,
   variableContext,
 }) => {
   const [values, setValues] = useState<number[]>([]);
@@ -140,8 +142,9 @@ export const NumberComponent: React.FC<NumberComponentProps> = ({
       onClone={onClone}
       onResize={onResize}
       onMove={onMove}
-      selected={selected}
+      isSelected={isSelected}
       onSelect={onSelect}
+      onDeselect={onDeselect}
       variableContext={variableContext}
     >
       <div className="number-component">
@@ -269,7 +272,7 @@ export const NumberComponent: React.FC<NumberComponentProps> = ({
                 </button>
               </div>
             )}
-            {selected && (
+            {isSelected() && (
               <button 
                 onClick={() => setIsEditMode(true)} 
                 className="edit-mode-button"

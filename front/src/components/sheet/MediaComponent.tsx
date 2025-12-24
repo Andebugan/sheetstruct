@@ -10,10 +10,11 @@ interface MediaComponentProps {
   onUpdate: (component: Component) => void;
   onDelete: () => void;
   onClone: () => void;
-  onResize: (style: StyleParams) => void;
-  onMove: (x: number, y: number) => void;
-  selected?: boolean;
+  onResize: (style: StyleParams) => Promise<void>;
+  onMove: (x: number, y: number) => Promise<void>;
+  isSelected: () => boolean;
   onSelect?: () => void;
+  onDeselect?: () => void;
   variableContext?: VariableContext;
 }
 
@@ -25,8 +26,9 @@ export const MediaComponent: React.FC<MediaComponentProps> = ({
   onClone,
   onResize,
   onMove,
-  selected,
+  isSelected,
   onSelect,
+  onDeselect,
   variableContext,
 }) => {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -95,8 +97,9 @@ export const MediaComponent: React.FC<MediaComponentProps> = ({
       onClone={onClone}
       onResize={onResize}
       onMove={onMove}
-      selected={selected}
+      isSelected={isSelected}
       onSelect={onSelect}
+      onDeselect={onDeselect}
       variableContext={variableContext}
     >
       <div className="media-component">
@@ -191,7 +194,7 @@ export const MediaComponent: React.FC<MediaComponentProps> = ({
                 </button>
               </div>
             )}
-            {selected && (
+            {isSelected() && (
               <button 
                 onClick={() => setIsEditMode(true)} 
                 className="edit-mode-button"

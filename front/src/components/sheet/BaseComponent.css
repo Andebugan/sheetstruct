@@ -27,7 +27,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 8px 18px;
   background: #f5f5f5;
   border-bottom: 1px solid #ddd;
   border-radius: 6px 6px 0 0;
@@ -92,7 +92,7 @@
 .component-menu button {
   display: block;
   width: 100%;
-  padding: 8px 12px;
+  padding: 8px 18px;
   border: none;
   background: white;
   text-align: left;
@@ -114,7 +114,7 @@
 }
 
 .component-content {
-  padding: 12px;
+  padding: 18px;
   height: calc(100% - 40px);
   overflow: visible;
   pointer-events: auto;
@@ -185,37 +185,37 @@
 }
 
 .resize-handle.ne {
-  top: -4px;
-  right: -4px;
-  width: 12px;
-  height: 12px;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
   cursor: nesw-resize;
   border-radius: 50%;
 }
 
 .resize-handle.nw {
-  top: -4px;
-  left: -4px;
-  width: 12px;
-  height: 12px;
+  top: -6px;
+  left: -6px;
+  width: 18px;
+  height: 18px;
   cursor: nwse-resize;
   border-radius: 50%;
 }
 
 .resize-handle.se {
-  bottom: -4px;
-  right: -4px;
-  width: 12px;
-  height: 12px;
+  bottom: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
   cursor: nwse-resize;
   border-radius: 50%;
 }
 
 .resize-handle.sw {
-  bottom: -4px;
-  left: -4px;
-  width: 12px;
-  height: 12px;
+  bottom: -6px;
+  left: -6px;
+  width: 18px;
+  height: 18px;
   cursor: nesw-resize;
   border-radius: 50%;
 }

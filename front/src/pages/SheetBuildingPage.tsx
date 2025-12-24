@@ -287,21 +287,21 @@ export const SheetBuildingPage: React.FC = () => {
     }
   };
 
-  const handleSelectComponent = (cid: number, multiSelect: boolean) => {
-    setSelectedComponents(prev => {
-      const newSet = new Set(prev);
-      if (multiSelect) {
-        if (newSet.has(cid)) {
-          newSet.delete(cid);
-        } else {
-          newSet.add(cid);
-        }
-      } else {
-        newSet.clear();
-        newSet.add(cid);
-      }
-      return newSet;
-    });
+  const handleCheckSelected = (cid: number) => {
+      const isSelected = selectedComponents.has(cid)
+      return isSelected;
+  };
+
+  const handleSelectComponent = (cid: number) => {
+    if (!selectedComponents.has(cid)) {
+      selectedComponents.add(cid);
+    }
+  };
+
+  const handleDeselectComponent = (cid: number) => {
+    if (selectedComponents.has(cid)) {
+      selectedComponents.delete(cid);
+    }
   };
 
   const handleSaveSheet = async () => {
@@ -385,8 +385,6 @@ export const SheetBuildingPage: React.FC = () => {
     const newRenderedIds = new Set(renderedIds);
     newRenderedIds.add(componentId);
     
-    const isSelected = selectedComponents.has(componentId);
-
     const commonProps = {
       component,
       style,
@@ -395,8 +393,9 @@ export const SheetBuildingPage: React.FC = () => {
       onClone: () => handleCloneComponent(component),
       onResize: (newStyle: StyleParams) => handleResizeComponent(component, newStyle),
       onMove: (x: number, y: number, targetContainerId?: number) => handleMoveComponent(component, x, y, targetContainerId),
-      selected: isSelected,
-      onSelect: () => handleSelectComponent(componentId, false),
+      isSelected: () => handleCheckSelected(componentId),
+      onSelect: () => handleSelectComponent(componentId),
+      onDeselect: () => handleDeselectComponent(componentId),
       variableContext,
       parentContainerId,
       parentContainerPosition,

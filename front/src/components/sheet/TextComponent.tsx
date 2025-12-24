@@ -11,10 +11,11 @@ interface TextComponentProps {
   onUpdate: (component: Component) => void;
   onDelete: () => void;
   onClone: () => void;
-  onResize: (style: StyleParams) => void;
-  onMove: (x: number, y: number) => void;
-  selected?: boolean;
+  onResize: (style: StyleParams) => Promise<void>;
+  onMove: (x: number, y: number) => Promise<void>;
+  isSelected: () => boolean;
   onSelect?: () => void;
+  onDeselect?: () => void;
   variableContext?: VariableContext;
 }
 
@@ -26,8 +27,9 @@ export const TextComponent: React.FC<TextComponentProps> = ({
   onClone,
   onResize,
   onMove,
-  selected,
+  isSelected,
   onSelect,
+  onDeselect,
   variableContext,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -102,8 +104,9 @@ export const TextComponent: React.FC<TextComponentProps> = ({
       onClone={onClone}
       onResize={onResize}
       onMove={onMove}
-      selected={selected}
+      isSelected={isSelected}
       onSelect={onSelect}
+      onDeselect={onDeselect}
       variableContext={variableContext}
     >
       <div className="text-component">
@@ -218,7 +221,7 @@ export const TextComponent: React.FC<TextComponentProps> = ({
                 </button>
               </div>
             )}
-            {selected && (
+            {isSelected() && (
               <button 
                 onClick={() => setIsEditMode(true)} 
                 className="edit-mode-button"

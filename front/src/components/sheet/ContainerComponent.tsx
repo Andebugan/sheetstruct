@@ -10,10 +10,11 @@ interface ContainerComponentProps {
   onUpdate: (component: Component) => void;
   onDelete: () => void;
   onClone: () => void;
-  onResize: (style: StyleParams) => void;
-  onMove: (x: number, y: number, targetContainerId?: number) => void;
-  selected?: boolean;
+  onResize: (style: StyleParams) => Promise<void>;
+  onMove: (x: number, y: number, targetContainerId?: number) => Promise<void>;
+  isSelected: () => boolean;
   onSelect?: () => void;
+  onDeselect?: () => void;
   children?: React.ReactNode;
   variableContext?: VariableContext;
   parentContainerId?: number;
@@ -28,8 +29,9 @@ export const ContainerComponent: React.FC<ContainerComponentProps> = ({
   onClone,
   onResize,
   onMove,
-  selected,
+  isSelected,
   onSelect,
+  onDeselect,
   children,
   variableContext,
   parentContainerId,
@@ -46,8 +48,9 @@ export const ContainerComponent: React.FC<ContainerComponentProps> = ({
       onClone={onClone}
       onResize={onResize}
       onMove={onMove}
-      selected={selected}
+      isSelected={isSelected}
       onSelect={onSelect}
+      onDeselect={onDeselect}
       variableContext={variableContext}
       parentContainerId={parentContainerId}
       parentContainerPosition={parentContainerPosition}
