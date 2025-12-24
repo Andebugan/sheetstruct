@@ -78,7 +78,8 @@ export const MediaComponent: React.FC<MediaComponentProps> = ({
       setMediaFiles(newFiles);
       setCurrentFile(fileName);
       
-      const varValue = newFiles.length > 1 ? JSON.stringify(newFiles) : fileName;
+      const encoder = new TextEncoder();
+      const varValue = encoder.encode(JSON.stringify(newFiles));
       onUpdate({
         ...component,
         VarValue: varValue,
@@ -117,7 +118,8 @@ export const MediaComponent: React.FC<MediaComponentProps> = ({
                     const newFiles = Array(count).fill('').map((_, i) => mediaFiles[i] ?? '');
                     setMediaFiles(newFiles);
                     setCurrentFile(newFiles[currentPage] || '');
-                    const varValue = count > 1 ? JSON.stringify(newFiles) : newFiles[0];
+                    const encoder = new TextEncoder()
+                    const varValue = encoder.encode(JSON.stringify(newFiles));
                     onUpdate({
                       ...component,
                       VarValue: varValue,

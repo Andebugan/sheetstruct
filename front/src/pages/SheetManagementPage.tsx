@@ -185,7 +185,8 @@ export const SheetManagementPage: React.FC = () => {
               const oldChildIds = JSON.parse(compData.varValue || '[]');
               if (Array.isArray(oldChildIds)) {
                 const newChildIds = oldChildIds.map((oldId: number) => idMapping.get(oldId)).filter((id: number | undefined) => id !== undefined);
-                const newVarValue = JSON.stringify(newChildIds);
+                const encoder = new TextEncoder();
+                const newVarValue = encoder.encode(JSON.stringify(newChildIds));
                 
                 const newCompId = idMapping.get(compData.id);
                 if (newCompId) {

@@ -38,12 +38,12 @@ export const FlagComponent: React.FC<FlagComponentProps> = ({
   useEffect(() => {
     if (component.VarValue) {
       try {
-        if (typeof component.VarValue === 'string') {
-          const parsed = JSON.parse(component.VarValue);
+          const decoder = new TextDecoder();
+          const varValue = decoder.decode(component.VarValue as Uint8Array)
+          const parsed = JSON.parse(varValue);
           if (Array.isArray(parsed)) {
             setValues(parsed);
           }
-        }
       } catch {
         const bool = typeof component.VarValue === 'string' && component.VarValue === 'true';
         setValues([bool]);
@@ -73,7 +73,8 @@ export const FlagComponent: React.FC<FlagComponentProps> = ({
   };
 
   const saveComponent = (newValues: boolean[]) => {
-    const varValue = JSON.stringify(newValues);
+    const encoder = new TextEncoder();
+    const varValue = encoder.encode(JSON.stringify(newValues));
     onUpdate({
       ...component,
       VarValue: varValue,

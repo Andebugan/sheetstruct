@@ -93,20 +93,21 @@ export const SheetBuildingPage: React.FC = () => {
     return JSON.stringify(style);
   }
 
-  const getDefaultValue = (varType: VarType): string => {
+  const getDefaultValue = (varType: VarType): Uint8Array => {
+    const encoder = new TextEncoder();
     switch (varType) {
       case VarType.Number:
-        return JSON.stringify({ values: [0], step: 0, isInteger: true });
+        return encoder.encode(JSON.stringify({ values: [0], step: 0, isInteger: true }));
       case VarType.Flag:
-        return JSON.stringify([false]);
+        return encoder.encode(JSON.stringify([false]));
       case VarType.Text:
-        return '';
+        return encoder.encode(JSON.stringify(['']));
       case VarType.Container:
-        return '[]';
+        return encoder.encode(JSON.stringify([]));
       case VarType.Media:
-        return '';
+        return encoder.encode(JSON.stringify([]));
       default:
-        return '';
+        return encoder.encode(JSON.stringify(''));
     }
   };
 
@@ -246,9 +247,10 @@ export const SheetBuildingPage: React.FC = () => {
             const parsed = JSON.parse(currentContainer.VarValue);
             if (Array.isArray(parsed)) {
               const updatedIds = parsed.filter((id: number) => id !== componentId);
+              const encoder = new TextEncoder();
               await handleUpdateComponent({
                 ...currentContainer,
-                VarValue: JSON.stringify(updatedIds),
+                VarValue: encoder.encode(JSON.stringify(updatedIds)),
               });
             }
           }
@@ -277,9 +279,10 @@ export const SheetBuildingPage: React.FC = () => {
           
           if (!childIds.includes(componentId)) {
             childIds.push(componentId);
+            const encoder = new TextEncoder();
             await handleUpdateComponent({
               ...targetContainer,
-              VarValue: JSON.stringify(childIds),
+              VarValue: encoder.encode(JSON.stringify(childIds)),
             });
           }
         }

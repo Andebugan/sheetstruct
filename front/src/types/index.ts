@@ -45,7 +45,7 @@ export interface Component {
   Template: boolean;
   VarName: string;
   VarType: VarType;
-  VarValue: Uint8Array | string;
+  VarValue: Uint8Array;
   Style: string;
 }
 

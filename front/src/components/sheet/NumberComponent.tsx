@@ -41,8 +41,8 @@ export const NumberComponent: React.FC<NumberComponentProps> = ({
   useEffect(() => {
     if (component.VarValue) {
       try {
-        if (typeof component.VarValue === 'string') {
-          const parsed = JSON.parse(component.VarValue);
+          const decoder = new TextDecoder();
+          const parsed = JSON.parse(decoder.decode(component.VarValue));
           if (Array.isArray(parsed.values)) {
             setValues(parsed.values);
             setStep(parsed.step || 0);
@@ -51,9 +51,8 @@ export const NumberComponent: React.FC<NumberComponentProps> = ({
           } else if (typeof parsed === 'number') {
             setValues([parsed]);
           }
-        }
       } catch {
-        const num = parseFloat(component.VarValue as string);
+        const num = 0;
         if (!isNaN(num)) {
           setValues([num]);
         }
@@ -109,12 +108,13 @@ export const NumberComponent: React.FC<NumberComponentProps> = ({
   };
 
   const saveComponent = (newValues: number[], newFormula?: string) => {
-    const varValue = JSON.stringify({
+    const encoder = new TextEncoder();
+    const varValue = encoder.encode(JSON.stringify({
       values: newValues,
       step,
       isInteger,
       formula: newFormula !== undefined ? newFormula : formula,
-    });
+    }));
     onUpdate({
       ...component,
       VarValue: varValue,

@@ -136,79 +136,18 @@ class ApiService {
   }
 
   async getComponents(sid: number): Promise<Component[]> {
-    try {
-      const response = await this.api.get<Component[]>(`/sheet/${sid}/components?sid=${sid}`);
-      const components = Array.isArray(response.data) ? response.data : [];
-      return components.map(comp => {
-        try {
-          // Handle different VarValue formats
-          if (comp.VarValue === null || comp.VarValue === undefined) {
-            return {
-              ...comp,
-              VarValue: '',
-            };
-          }
-          
-          if (Array.isArray(comp.VarValue)) {
-            if (comp.VarValue.length === 0) {
-              return {
-                ...comp,
-                VarValue: '',
-              };
-            }
-            try {
-              const decoded = new TextDecoder().decode(new Uint8Array(comp.VarValue));
-              return {
-                ...comp,
-                VarValue: decoded,
-              };
-            } catch {
-              try {
-                const jsonStr = String.fromCharCode.apply(null, Array.from(comp.VarValue));
-                return {
-                  ...comp,
-                  VarValue: jsonStr,
-                };
-              } catch {
-                return {
-                  ...comp,
-                  VarValue: '',
-                };
-              }
-            }
-          }
-
-          return {
-            ...comp,
-            VarValue: comp.VarValue || '',
-          };
-        } catch (err) {
-          console.warn('Ошибка обработки VarValue компонента:', err, comp);
-          return {
-            ...comp,
-            VarValue: '',
-          };
-        }
-      });
-    } catch (error) {
-      console.error('Ошибка загрузки компонента:', error);
-      return [];
-    }
+    const response = await this.api.get<Component[]>(`/sheet/${sid}/components?sid=${sid}`);
+    const components = Array.isArray(response.data) ? response.data : [];
+    return components
   }
 
   async getComponent(sid: number, cid: number): Promise<Component> {
     const response = await this.api.get<Component>(`/sheet/${sid}/component/${cid}?sid=${sid}&cid=${cid}`);
-    if (response.data.VarValue && Array.isArray(response.data.VarValue)) {
-      response.data.VarValue = new TextDecoder().decode(new Uint8Array(response.data.VarValue));
-    }
     return response.data;
   }
 
   async createComponent(sid: number): Promise<Component> {
     const response = await this.api.post<Component>(`/sheet/${sid}/component?sid=${sid}`);
-    if (response.data.VarValue && Array.isArray(response.data.VarValue)) {
-      response.data.VarValue = new TextDecoder().decode(new Uint8Array(response.data.VarValue));
-    }
     return response.data;
   }
 
@@ -228,13 +167,6 @@ class ApiService {
       VarValue: varValueBytes,
     };
     const response = await this.api.patch<Component>(`/sheet/${sid}/component?sid=${sid}`, componentData);
-    if (response.data.VarValue && Array.isArray(response.data.VarValue)) {
-      try {
-        response.data.VarValue = new TextDecoder().decode(new Uint8Array(response.data.VarValue));
-      } catch {
-        response.data.VarValue = '';
-      }
-    }
     return response.data;
   }
 
@@ -244,9 +176,6 @@ class ApiService {
 
   async cloneComponent(sid: number, cid: number): Promise<Component> {
     const response = await this.api.put<Component>(`/sheet/${sid}/component/${cid}?sid=${sid}&cid=${cid}`);
-    if (response.data.VarValue && Array.isArray(response.data.VarValue)) {
-      response.data.VarValue = new TextDecoder().decode(new Uint8Array(response.data.VarValue));
-    }
     return response.data;
   }
 

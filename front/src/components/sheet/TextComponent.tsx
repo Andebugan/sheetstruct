@@ -40,30 +40,17 @@ export const TextComponent: React.FC<TextComponentProps> = ({
 
   useEffect(() => {
     if (component.VarValue) {
-      if (typeof component.VarValue === 'string') {
-        try {
-          const parsed = JSON.parse(component.VarValue);
-          if (Array.isArray(parsed)) {
-            setTexts(parsed);
-            setText(parsed[currentPage] || '');
-          } else {
-            setTexts([component.VarValue]);
-            setText(component.VarValue);
-          }
-        } catch {
-          setTexts([component.VarValue]);
-          setText(component.VarValue);
+      try {
+        const decoder = new TextDecoder();
+        const decoded = decoder.decode(component.VarValue as Uint8Array);
+        const parsed = JSON.parse(decoded);
+        if (Array.isArray(parsed)) {
+          setTexts(parsed);
+          setText(parsed[currentPage] || '');
         }
-      } else {
-        try {
-          const decoder = new TextDecoder();
-          const decoded = decoder.decode(component.VarValue as Uint8Array);
-          setTexts([decoded]);
-          setText(decoded);
-        } catch {
-          setTexts(['']);
-          setText('');
-        }
+      } catch {
+        setTexts(['']);
+        setText('');
       }
     } else {
       setTexts(['']);
@@ -75,7 +62,10 @@ export const TextComponent: React.FC<TextComponentProps> = ({
     const newTexts = [...texts];
     newTexts[currentPage] = text;
     setTexts(newTexts);
-    const varValue = texts.length > 1 ? JSON.stringify(newTexts) : text;
+
+    const encoder = new TextEncoder();
+    const varValue = encoder.encode(JSON.stringify(newTexts));
+
     onUpdate({
       ...component,
       VarValue: varValue,
@@ -89,11 +79,12 @@ export const TextComponent: React.FC<TextComponentProps> = ({
   };
 
   const isMultivalue = texts.length > 1;
-  const resolvedText = useMemo(() => {
-    if (!variableContext || !text) return text;
-    const componentId = typeof component.Id === 'object' ? component.Id.Value : component.Id;
-    return resolveVariables(text, variableContext, componentId);
-  }, [text, variableContext, component]);
+  //const resolvedText = useMemo(() => {
+  //  if (!variableContext || !text) return text;
+  //  const componentId = typeof component.Id === 'object' ? component.Id.Value : component.Id;
+  //  return resolveVariables(text, variableContext, componentId);
+  //}, [text, variableContext, component]);
+  const resolvedText = text
 
   return (
     <BaseComponent
@@ -124,7 +115,10 @@ export const TextComponent: React.FC<TextComponentProps> = ({
                     const newTexts = Array(count).fill('').map((_, i) => texts[i] ?? '');
                     setTexts(newTexts);
                     setText(newTexts[currentPage] || '');
-                    const varValue = count > 1 ? JSON.stringify(newTexts) : newTexts[0];
+
+                    const encoder = new TextEncoder();
+                    const varValue = encoder.encode(JSON.stringify(newTexts));
+
                     onUpdate({
                       ...component,
                       VarValue: varValue,
